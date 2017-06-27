@@ -1,0 +1,35 @@
+# -*- mode: makefile; -*-
+
+BOOST_CPPFLAGS += -DBOOST_SPIRIT_THREADSAFE
+
+BOOST_LIBS =                                    \
+    $(BOOST_FILESYSTEM_LIBS)                    \
+    $(BOOST_IOSTREAMS_LIBS)                     \
+    $(BOOST_PROGRAM_OPTIONS_LIBS)               \
+    $(BOOST_SYSTEM_LIBS)                        \
+    $(BOOST_THREAD_LIBS)                        \
+    $(BOOST_TIMER_LIBS)
+
+OPENCV_LIBS =                                   \
+    $(OPENCV_VIDEOIO_LIBS)                      \
+    $(OPENCV_HIGHGUI_LIBS)                      \
+    $(OPENCV_IMGPROC_LIBS)                      \
+    $(OPENCV_IMGCODECS_LIBS)                    \
+    $(OPENCV_CORE_LIBS)
+
+AM_CPPFLAGS = -I. -I$(top_srcdir)/include       \
+    $(BOOST_CPPFLAGS) $(OPENCV_CPPFLAGS)
+
+AM_LDFLAGS =                                    \
+    $(BOOST_FILESYSTEM_LDFLAGS)                 \
+    $(BOOST_IOSTREAMS_LDFLAGS)                  \
+    $(BOOST_PROGRAM_OPTIONS_LDFLAGS)            \
+    $(BOOST_SYSTEM_LDFLAGS)                     \
+    $(BOOST_THREAD_LDFLAGS)                     \
+    $(BOOST_TIMER_LDFLAGS)                      \
+    $(OPENCV_HIGHGUI_LDFLAGS)                   \
+    $(OPENCV_IMGPROC_LDFLAGS)                   \
+    $(OPENCV_IMGCODECS_LDFLAGS)                 \
+    $(OPENCV_CORE_LDFLAGS)
+
+LIBS = $(BOOST_LIBS) $(OPENCV_LIBS)
