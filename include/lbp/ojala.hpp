@@ -2,9 +2,11 @@
 #define LBP_OJALA_HPP
 
 #include <lbp/defs.hpp>
-#include <opencv2/imgproc.hpp>
 
-namespace lbp {
+#include <utility>
+#include <vector>
+
+#include <opencv2/core.hpp>
 
 //
 // @inproceedings{Ojala:2001:GLB:646260.685274,
@@ -23,9 +25,42 @@ namespace lbp {
 // }
 //
 
-cv::Mat
-ojala (const cv::Mat&);
+namespace lbp {
+
+template< typename T, size_t R, size_t P, typename C = std::greater_equal< T > >
+struct ojala_t {
+    using compare_type = C;
+
+public:
+    explicit ojala_t (const compare_type& = compare_type ());
+
+    cv::Mat operator() (const cv::Mat&) const;
+
+private:
+    size_t operator() (const cv::Mat&, size_t, size_t) const;
+
+private:
+    std::vector< std::pair< int, int > > N;
+    compare_type cmp_;
+};
+
+template< typename T, typename C >
+struct ojala_t< T, 1, 8, C > {
+    using compare_type = C;
+
+public:
+    explicit ojala_t (const compare_type& cmp = compare_type ())
+        : cmp_ (cmp)
+        { }
+
+    cv::Mat operator() (const cv::Mat&) const;
+
+private:
+    compare_type cmp_;
+};
 
 } // namespace lbp
+
+#include <lbp/ojala.cc>
 
 #endif // LBP_OJALA_HPP

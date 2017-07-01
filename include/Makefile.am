@@ -6,4 +6,5 @@ nobase_include_HEADERS =                        \
   lbp/defs.hpp                                  \
   lbp/frame_range.hpp                           \
   lbp/ojala.hpp                                 \
+  lbp/ojala.cc                                  \
   lbp/utils.hpp

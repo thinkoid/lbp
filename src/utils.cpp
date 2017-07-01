@@ -342,4 +342,26 @@ frame_delay::wait_for_key (int key) const {
     return key == cv::waitKey (remaining);
 }
 
+inline size_t
+count_ones (size_t arg) {
+    size_t n = 0;
+
+    for (; arg; arg >>= 1) {
+        n += arg & 1;
+    }
+
+    return n;
+}
+
+inline size_t
+count_flips (size_t n, size_t P) {
+    return count_ones (size_t (((n >> 1) | ((n & 1) << (P - 1))) ^ n));
+}
+
+size_t
+ojala_uniformity_measure (size_t n, size_t P) {
+    const auto a = count_ones (n), b = count_flips (n, P);
+    return b < 3 ? a : (P + 1);
+}
+
 } // namespace lbp

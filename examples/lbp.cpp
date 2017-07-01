@@ -14,6 +14,9 @@ namespace po = boost::program_options;
 #include <options.hpp>
 #include <run.hpp>
 
+#include <opencv2/core.hpp>
+using namespace cv;
+
 //
 // options_t::options_t is specific to each example:
 //
@@ -80,16 +83,16 @@ static void
 process_ojala (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
+    const lbp::ojala_t< unsigned char, 1, 8 > c;
+
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 40 };
 
-        const auto scaled_frame = lbp::scale_frame (frame);
-
         const auto result = lbp::convert (
-            lbp::ojala (scaled_frame), CV_8U, 255./9);
+            c (lbp::scale_frame (frame)), CV_8U, 255. / 9);
 
         if (display) {
-            imshow ("Ojala (2001)", result);
+            imshow ("Ojala (2001), radius 1, samples 8", result);
         }
 
         if (temp.wait_for_key (27))
