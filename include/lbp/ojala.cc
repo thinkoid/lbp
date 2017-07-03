@@ -53,22 +53,6 @@ template< typename T, typename C >
 inline cv::Mat
 ojala_t< T, 1, 8, C >::operator() (const cv::Mat& src) const
 {
-    static constexpr int
-        N [8][2] = {
-        { -1, -1 },
-        {  0, -1 },
-        {  1, -1 },
-        { -1,  0 },
-        {  1,  0 },
-        { -1,  1 },
-        {  0,  1 },
-        {  1,  1 }
-    };
-
-    static constexpr size_t S [] = {
-        7, 6, 5, 0, 4, 1, 2, 3
-    };
-
     static constexpr size_t U [] = {
         0, 1, 1, 2, 1, 9, 2, 3, 1, 9, 9, 9, 2, 9, 3, 4,
         1, 9, 9, 9, 9, 9, 9, 9, 2, 9, 9, 9, 3, 9, 4, 5,
@@ -88,23 +72,26 @@ ojala_t< T, 1, 8, C >::operator() (const cv::Mat& src) const
         4, 5, 9, 6, 9, 9, 9, 7, 5, 6, 9, 7, 6, 7, 7, 8
     };
 
-    auto dst = cv::Mat (src.size (), CV_8UC1, cv::Scalar (0));
+    cv::Mat dst (src.size (), CV_8UC1);
 
-    for (size_t i = 1; i < size_t (src.rows) - 1; ++i) {
-        auto s = dst.ptr< unsigned char > (i);
+    for (int i = 1; i < int (src.rows) - 1; ++i) {
+        const T* p = src.ptr< T > (i - 1);
+        const T* q = src.ptr< T > (i);
+        const T* r = src.ptr< T > (i + 1);
 
-        for (size_t j = 1; j < size_t (src.cols) - 1; ++j) {
-            const T* p [3] = {
-                src.ptr< T > (i - 1) + j,
-                src.ptr< T > (i) + j,
-                src.ptr< T > (i + 1) + j
-            };
+        T* s = dst.ptr< T > (i);
 
-            const auto c = p [1][0];
-
-#define T(k) (size_t (cmp_ (p [1 + N [k][1]][N [k][0]], c)) << S [k])
-            const auto k = T(0) | T(1) | T(2) | T(3) | T(4) | T(5) | T(6) | T(7);
-            assert (k < sizeof U / sizeof *U);
+        for (int j = 1; j < int (src.cols) - 1; ++j) {
+#define T(a, b, c) ((a [b] >= q [j]) << c)
+            const unsigned char k =
+                T (p, j - 1, 7) |
+                T (p, j    , 6) |
+                T (p, j + 1, 5) |
+                T (r, j + 1, 3) |
+                T (r, j    , 2) |
+                T (r, j - 1, 1) |
+                T (q, j - 1, 0) |
+                T (q, j + 1, 4);
 #undef T
 
             s [j] = U [k];
