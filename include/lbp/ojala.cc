@@ -82,7 +82,7 @@ ojala_t< T, 1, 8, C >::operator() (const cv::Mat& src) const
         T* s = dst.ptr< T > (i);
 
         for (int j = 1; j < int (src.cols) - 1; ++j) {
-#define T(a, b, c) ((a [b] >= q [j]) << c)
+#define T(a, b, c) (cmp_ (a [b], q [j]) << c)
             const unsigned char k =
                 T (p, j - 1, 7) |
                 T (p, j    , 6) |
