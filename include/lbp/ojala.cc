@@ -101,4 +101,47 @@ ojala_t< T, 1, 8, C >::operator() (const cv::Mat& src) const
     return dst;
 }
 
+template< typename T, typename C >
+inline cv::Mat
+ojala_t< T, 2, 16, C >::operator() (const cv::Mat& src) const
+{
+    cv::Mat dst (src.size (), CV_8UC1);
+
+    for (int i = 2; i < int (src.rows) - 2; ++i) {
+        const T* p = src.ptr< T > (i - 2);
+        const T* q = src.ptr< T > (i - 1);
+        const T* r = src.ptr< T > (i);
+        const T* s = src.ptr< T > (i + 1);
+        const T* t = src.ptr< T > (i + 2);
+
+        T* u = dst.ptr< T > (i);
+
+        for (int j = 2; j < int (src.cols) - 2; ++j) {
+#define T(a, b, c) (cmp_ (a [b], r [j]) << c)
+            const unsigned k =
+                T (p, j -1,   0) |
+                T (p, j,      1) |
+                T (p, j + 1,  2) |
+                T (q, j - 2,  3) |
+                T (q, j - 1,  4) |
+                T (q, j + 1,  5) |
+                T (q, j + 2,  6) |
+                T (r, j - 2,  7) |
+                T (r, j + 2,  8) |
+                T (s, j - 2,  9) |
+                T (s, j - 1, 10) |
+                T (s, j + 1, 11) |
+                T (s, j + 2, 12) |
+                T (t, j - 1, 13) |
+                T (t, j + 1, 14) |
+                T (t, j,     15);
+#undef T
+
+            u [j] = ojala_uniformity_measure (k, 16);
+        }
+    }
+
+    return dst;
+}
+
 } // namespace lbp

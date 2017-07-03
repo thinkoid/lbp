@@ -83,16 +83,16 @@ static void
 process_ojala (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
-    const lbp::ojala_t< unsigned char, 1, 8 > c;
+    const lbp::ojala_t< unsigned char, 2, 16 > c;
 
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 40 };
 
         const auto result = lbp::convert (
-            c (lbp::scale_frame (frame)), CV_8U, 255. / 9);
+            c (lbp::scale_frame (frame)), CV_8U, 255. / 17);
 
         if (display) {
-            imshow ("Ojala (2001), radius 1, samples 8", result);
+            imshow ("Ojala (2001), radius 2, samples 16", result);
         }
 
         if (temp.wait_for_key (27))

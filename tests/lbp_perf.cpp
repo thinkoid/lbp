@@ -22,7 +22,7 @@ namespace fs = boost::filesystem;
 
 static void
 run_from_stream (VideoCapture& cap) {
-    const lbp::ojala_t< unsigned char, 1, 8 > c;
+    const lbp::ojala_t< unsigned char, 2, 16 > c;
 
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 1 };
@@ -37,7 +37,7 @@ run_from_stream (VideoCapture& cap) {
         }
 
         imshow ("Generalized Ojala LBP algorithm",
-                lbp::convert (output_frame, CV_8U, 255./9));
+                lbp::convert (output_frame, CV_8U, 255./17));
 
         if (temp.wait_for_key (27))
             break;

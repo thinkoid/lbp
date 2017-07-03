@@ -59,6 +59,21 @@ private:
     compare_type cmp_;
 };
 
+template< typename T, typename C >
+struct ojala_t< T, 2, 16, C > {
+    using compare_type = C;
+
+public:
+    explicit ojala_t (const compare_type& cmp = compare_type ())
+        : cmp_ (cmp)
+        { }
+
+    cv::Mat operator() (const cv::Mat&) const;
+
+private:
+    compare_type cmp_;
+};
+
 } // namespace lbp
 
 #include <lbp/ojala.cc>
