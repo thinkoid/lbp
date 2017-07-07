@@ -8,6 +8,7 @@ using namespace std;
 namespace po = boost::program_options;
 
 #include <lbp/frame_range.hpp>
+#include <lbp/oclbp.hpp>
 #include <lbp/ojala.hpp>
 #include <lbp/utils.hpp>
 
@@ -101,6 +102,34 @@ process_ojala (cv::VideoCapture& cap, const options_t& opts) {
 }
 
 static void
+process_oclbp (cv::VideoCapture& cap, const options_t& opts) {
+    const bool display = opts.have ("display");
+
+    const lbp::oclbp_t c;
+
+    for (auto& frame : lbp::getframes_from (cap)) {
+        lbp::frame_delay temp { 40 };
+
+        const auto images = c (frame);
+
+        if (display) {
+            const string s ("Opponent Color LBP");
+
+            size_t i = 0;
+
+            for (size_t i = 0; i < images.size (); ++i) {
+                stringstream ss (s);
+                ss << " part " << i;
+                imshow (ss.str (), images [i]);
+            }
+        }
+
+        if (temp.wait_for_key (27))
+            break;
+    }
+}
+
+static void
 process (cv::VideoCapture& cap, const options_t& opts)
 {
     const auto a = opts ["algorithm"].as< string > ();
@@ -109,6 +138,9 @@ process (cv::VideoCapture& cap, const options_t& opts)
 
     if (a == "ojala") {
         process_ojala (cap, opts);
+    }
+    else if (a == "oclbp") {
+        process_oclbp (cap, opts);
     }
 }
 

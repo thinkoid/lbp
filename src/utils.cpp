@@ -1,3 +1,5 @@
+// -*- mode: c++ -*-
+
 #include <lbp/utils.hpp>
 
 #include <opencv2/imgproc.hpp>
