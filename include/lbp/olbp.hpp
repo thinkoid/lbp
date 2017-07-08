@@ -1,5 +1,5 @@
-#ifndef LBP_OJALA_HPP
-#define LBP_OJALA_HPP
+#ifndef LBP_OLBP_HPP
+#define LBP_OLBP_HPP
 
 #include <lbp/defs.hpp>
 
@@ -27,55 +27,56 @@
 
 namespace lbp {
 
-template< typename T, size_t R, size_t P, typename C = std::greater_equal< T > >
-struct ojala_t {
-    using compare_type = C;
+template< typename T, size_t R, size_t P >
+struct olbp_t {
+    static constexpr size_t radius = R;
+    static constexpr size_t size = P;
 
 public:
-    explicit ojala_t (const compare_type& = compare_type ());
+    explicit olbp_t ();
 
     cv::Mat operator() (const cv::Mat&) const;
+    cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
 
 private:
-    size_t operator() (const cv::Mat&, size_t, size_t) const;
+    size_t operator() (const cv::Mat&, const cv::Mat&, size_t, size_t) const;
 
 private:
     std::vector< std::pair< int, int > > N;
-    compare_type cmp_;
 };
 
-template< typename T, typename C >
-struct ojala_t< T, 1, 8, C > {
-    using compare_type = C;
+template< typename T >
+struct olbp_t< T, 1, 8 > {
+    static constexpr size_t radius = 1;
+    static constexpr size_t size = 8;
 
 public:
-    explicit ojala_t (const compare_type& cmp = compare_type ())
-        : cmp_ (cmp)
-        { }
-
     cv::Mat operator() (const cv::Mat&) const;
-
-private:
-    compare_type cmp_;
+    cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
 };
 
-template< typename T, typename C >
-struct ojala_t< T, 2, 16, C > {
-    using compare_type = C;
+template< typename T >
+struct olbp_t< T, 2, 12 > {
+    static constexpr size_t radius = 2;
+    static constexpr size_t size = 12;
 
 public:
-    explicit ojala_t (const compare_type& cmp = compare_type ())
-        : cmp_ (cmp)
-        { }
-
     cv::Mat operator() (const cv::Mat&) const;
+    cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
+};
 
-private:
-    compare_type cmp_;
+template< typename T >
+struct olbp_t< T, 2, 16 > {
+    static constexpr size_t radius = 2;
+    static constexpr size_t size = 16;
+
+public:
+    cv::Mat operator() (const cv::Mat&) const;
+    cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
 };
 
 } // namespace lbp
 
-#include <lbp/ojala.cc>
+#include <lbp/olbp.cc>
 
-#endif // LBP_OJALA_HPP
+#endif // LBP_OLBP_HPP

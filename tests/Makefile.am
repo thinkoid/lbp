@@ -16,6 +16,3 @@ check_PROGRAMS = placeholder
 
 placeholder_SOURCES = placeholder.cpp
 placeholder_LDADD = $(LIBS)
-
-bin_PROGRAMS = lbp_perf
-lbp_perf_SOURCES = lbp_perf.cpp

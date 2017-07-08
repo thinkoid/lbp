@@ -9,7 +9,7 @@ namespace po = boost::program_options;
 
 #include <lbp/frame_range.hpp>
 #include <lbp/oclbp.hpp>
-#include <lbp/ojala.hpp>
+#include <lbp/olbp.hpp>
 #include <lbp/utils.hpp>
 
 #include <options.hpp>
@@ -17,6 +17,9 @@ namespace po = boost::program_options;
 
 #include <opencv2/core.hpp>
 using namespace cv;
+
+#include <boost/timer/timer.hpp>
+namespace timers = boost::timer;
 
 //
 // options_t::options_t is specific to each example:
@@ -41,7 +44,7 @@ options_t::options_t (int argc, char** argv) {
         ("input,i",   po::value< std::string > ()->default_value ("0"),
          "input (file or stream index).")
 
-        ("algorithm,a", po::value< std::string > ()->default_value ("ojala"),
+        ("algorithm,a", po::value< std::string > ()->default_value ("olbp"),
          "algorithm");
 
     desc_ = boost::make_shared< po::options_description > ();
@@ -80,20 +83,31 @@ program_options_from (int& argc, char** argv) {
 
 ////////////////////////////////////////////////////////////////////////
 
-static void
-process_ojala (cv::VideoCapture& cap, const options_t& opts) {
+template< typename F >
+void process_olbp (cv::VideoCapture& cap, const options_t& opts, const F& f) {
     const bool display = opts.have ("display");
 
-    const lbp::ojala_t< unsigned char, 2, 16 > c;
+    stringstream ss;
+    ss << "Olbp (2001), radius " << F::radius << ", samples " << F::size;
+
+    const auto title = ss.str ();
 
     for (auto& frame : lbp::getframes_from (cap)) {
-        lbp::frame_delay temp { 40 };
+        lbp::frame_delay temp { 1 };
 
-        const auto result = lbp::convert (
-            c (lbp::scale_frame (frame)), CV_8U, 255. / 17);
+        const auto gray_frame = lbp::convert_color (frame, COLOR_BGR2GRAY);
+
+        Mat result;
+
+        {
+            timers::auto_cpu_timer timer;
+            result = f (gray_frame);
+        }
+
+        result = lbp::convert (result, CV_8U, 255. / (F::size + 1));
 
         if (display) {
-            imshow ("Ojala (2001), radius 2, samples 16", result);
+            imshow (title, result);
         }
 
         if (temp.wait_for_key (27))
@@ -102,15 +116,47 @@ process_ojala (cv::VideoCapture& cap, const options_t& opts) {
 }
 
 static void
+process_olbp_1_8 (cv::VideoCapture& cap, const options_t& opts) {
+    process_olbp (cap, opts, lbp::olbp_t< unsigned char, 1, 8 > { });
+}
+
+static void
+process_olbp_2_10 (cv::VideoCapture& cap, const options_t& opts) {
+    process_olbp (cap, opts, lbp::olbp_t< unsigned char, 2, 10 > { });
+}
+
+static void
+process_olbp_2_12 (cv::VideoCapture& cap, const options_t& opts) {
+    process_olbp (cap, opts, lbp::olbp_t< unsigned char, 2, 12 > { });
+}
+
+static void
+process_olbp_2_16 (cv::VideoCapture& cap, const options_t& opts) {
+    process_olbp (cap, opts, lbp::olbp_t< unsigned char, 2, 16 > { });
+}
+
+static void
+process_olbp_3_32 (cv::VideoCapture& cap, const options_t& opts) {
+    process_olbp (cap, opts, lbp::olbp_t< unsigned char, 3, 32 > { });
+}
+
+////////////////////////////////////////////////////////////////////////
+
+static void
 process_oclbp (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
-    const lbp::oclbp_t c;
+    const lbp::oclbp_t op;
 
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 40 };
 
-        const auto images = c (frame);
+        vector< Mat > images;
+
+        {
+            timers::auto_cpu_timer timer;
+            images = op (frame);
+        }
 
         if (display) {
             const string s ("Opponent Color LBP");
@@ -136,8 +182,20 @@ process (cv::VideoCapture& cap, const options_t& opts)
 
     cout << a << endl;
 
-    if (a == "ojala") {
-        process_ojala (cap, opts);
+    if (a == "olbp-1-8") {
+        process_olbp_1_8 (cap, opts);
+    }
+    else if (a == "olbp-2-10") {
+        process_olbp_2_10 (cap, opts);
+    }
+    else if (a == "olbp-2-12") {
+        process_olbp_2_12 (cap, opts);
+    }
+    else if (a == "olbp-2-16") {
+        process_olbp_2_16 (cap, opts);
+    }
+    else if (a == "olbp-3-32") {
+        process_olbp_3_32 (cap, opts);
     }
     else if (a == "oclbp") {
         process_oclbp (cap, opts);

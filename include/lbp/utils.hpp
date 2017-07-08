@@ -87,8 +87,6 @@ private:
     std::chrono::high_resolution_clock::time_point begin_;
 };
 
-size_t ojala_uniformity_measure (size_t, size_t);
-
 } // namespace lbp
 
 #endif // LBP_COMMON_HPP
