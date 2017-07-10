@@ -51,6 +51,7 @@ AC_CONFIG_FILES(include/Makefile)
 AC_CONFIG_FILES(src/Makefile)
 AC_CONFIG_FILES(examples/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
+AC_CONFIG_FILES(tests/perf/Makefile)
 
 AC_OUTPUT()
 

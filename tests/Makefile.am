@@ -1,5 +1,7 @@
 # -*- mode: makefile -*-
 
+SUBDIRS = perf
+
 EXTRA_DIST = 
 
 include $(top_srcdir)/Makefile.common
