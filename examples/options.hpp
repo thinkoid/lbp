@@ -48,4 +48,7 @@ have_global_option (const std::string& s) {
     return have_global_option (s.c_str ());
 }
 
+void
+program_options_from (int&, char**);
+
 #endif // LBP_OPTIONS_HPP

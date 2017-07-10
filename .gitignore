@@ -28,7 +28,9 @@ config.sub
 configure
 depcomp
 depot
-examples/lbp
+examples/olbp
+examples/oclbp
+examples/varlbp
 install-sh
 libtool
 libtool.m4

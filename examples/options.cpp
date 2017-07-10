@@ -67,3 +67,25 @@ bool
 options_t::have (const char* key) const {
     return bool (map_.count (key));
 }
+
+void
+program_options_from (int& argc, char** argv) {
+    bool complete_invocation = false;
+
+    options_t program_options (argc, argv);
+
+    if (program_options.have ("version")) {
+        std::cout << "OpenCV v3.1\n";
+        complete_invocation = true;
+    }
+
+    if (program_options.have ("help")) {
+        std::cout << program_options.description () << std::endl;
+        complete_invocation = true;
+    }
+
+    if (complete_invocation)
+        exit (0);
+
+    global_options (program_options);
+}
