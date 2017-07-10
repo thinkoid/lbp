@@ -10,6 +10,9 @@ using namespace std;
 #include <options.hpp>
 #include <run.hpp>
 
+#include <boost/format.hpp>
+using fmt = boost::format;
+
 static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
@@ -25,9 +28,7 @@ f (cv::VideoCapture& cap, const options_t& opts) {
             size_t i = 0;
 
             for (const auto& image : images) {
-                stringstream ss;
-                ss << "Opponent Color LBP (" << i++ << ")";
-                imshow (ss.str (), image);
+                imshow ((fmt ("Opponent Color LBP #%1%") % (i++)).str (), image);
             }
         }
 
