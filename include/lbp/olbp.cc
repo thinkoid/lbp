@@ -70,6 +70,7 @@ olbp_t< T, R, P >::operator() (const cv::Mat& src, const cv::Mat& ref) const
 
     auto dst = cv::Mat (src.size (), CV_8UC1, cv::Scalar (0));
 
+#pragma omp parallel for
     for (size_t i = R; i < src.rows - R; ++i) {
         for (size_t j = R; j < src.cols - R; ++j) {
             dst.at< unsigned char > (i, j) = this->operator() (src, ref, i, j);
@@ -114,6 +115,7 @@ olbp_t< T, 1, 8 >::operator() (const cv::Mat& src, const cv::Mat& ref) const
 
     cv::Mat dst (src.size (), CV_8UC1);
 
+#pragma omp parallel for
     for (int i = 1; i < src.rows - 1; ++i) {
         const T* p = src.ptr< T > (i - 1);
         const T* q = src.ptr< T > (i);
@@ -161,6 +163,7 @@ olbp_t< T, 2, 12 >::operator() (const cv::Mat& src, const cv::Mat& ref) const
 
     cv::Mat dst (src.size (), CV_8UC1);
 
+#pragma omp parallel for
     for (int i = 2; i < src.rows - 2; ++i) {
         const T* p = src.ptr< T > (i - 2);
         const T* q = src.ptr< T > (i - 1);
@@ -214,6 +217,7 @@ olbp_t< T, 2, 16 >::operator() (const cv::Mat& src, const cv::Mat& ref) const
 
     cv::Mat dst (src.size (), CV_8UC1);
 
+#pragma omp parallel for
     for (int i = 2; i < src.rows - 2; ++i) {
         const T* p = src.ptr< T > (i - 2);
         const T* q = src.ptr< T > (i - 1);

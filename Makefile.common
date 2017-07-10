@@ -32,4 +32,6 @@ AM_LDFLAGS =                                    \
     $(OPENCV_IMGCODECS_LDFLAGS)                 \
     $(OPENCV_CORE_LDFLAGS)
 
-LIBS = $(BOOST_LIBS) $(OPENCV_LIBS)
+AM_CXXFLAGS = $(OPENMP_CXXFLAGS)
+
+LIBS = $(BOOST_LIBS) $(OPENCV_LIBS) $(OPENMP_LIBS)

@@ -8,11 +8,8 @@
 
 namespace lbp {
 
-const int BACKGROUND = 0;
-const int FOREGROUND = 255;
-
 cv::Mat
-convert (cv::Mat, int, double a = 1, double b = 0);
+convert (const cv::Mat&, int, double a = 1, double b = 0);
 
 cv::Mat
 float_from (const cv::Mat&, double scale = 1. / 255, double offset = 0.);
@@ -21,7 +18,7 @@ cv::Mat
 mono_from (const cv::Mat&, double scale = 255., double offset = 0.);
 
 cv::Mat
-mono_integral_from (cv::Mat, double scale = 1., double offset = 0.);
+mono_integral_from (const cv::Mat&, double scale = 1., double offset = 0.);
 
 cv::Mat
 median_blur (const cv::Mat&, int size = 3);
@@ -64,7 +61,7 @@ cv::Mat
 bitwise_not (cv::Mat);
 
 cv::Mat
-bitwise_not (cv::Mat, const cv::Mat&);
+bitwise_not (const cv::Mat&, const cv::Mat&);
 
 cv::Mat
 mask (const cv::Mat&, const cv::Mat&);

@@ -52,18 +52,19 @@ do_oclbp (const Mat& src, const Mat& ref)
 static vector< Mat >
 oclbp (const Mat& src)
 {
+    static constexpr size_t arr [][2] = {
+        { 0, 0 }, { 1, 1 }, { 2, 2 }, { 1, 0 }, { 2, 0 }, { 2, 1 }
+    };
+
     vector< Mat > planes (3);
     split (src, planes);
 
     vector< Mat > dsts (6);
 
-    dsts [0] = do_oclbp (planes [0], planes [0]);
-    dsts [1] = do_oclbp (planes [1], planes [1]);
-    dsts [2] = do_oclbp (planes [2], planes [2]);
-
-    dsts [3] = do_oclbp (planes [1], planes [0]);
-    dsts [4] = do_oclbp (planes [2], planes [0]);
-    dsts [5] = do_oclbp (planes [2], planes [1]);
+#pragma omp parallel for
+    for (size_t i = 0; i < sizeof arr / sizeof *arr; ++i) {
+        dsts [i] = do_oclbp (planes [arr [i][0]], planes [arr [i][1]]);
+    }
 
     return dsts;
 }

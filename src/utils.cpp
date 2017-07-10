@@ -203,8 +203,9 @@ threshold (const cv::Mat& src, double threshold_, double value, int type) {
 }
 
 cv::Mat
-convert (cv::Mat src, int t, double a, double b) {
-    return src.convertTo (src, t, a, b), src;
+convert (const cv::Mat& src, int t, double a, double b) {
+    cv::Mat dst;
+    return src.convertTo (dst, t, a, b), dst;
 }
 
 cv::Mat
@@ -218,7 +219,7 @@ mono_from (const cv::Mat& src, double scale, double offset) {
 }
 
 cv::Mat
-mono_integral_from (cv::Mat src, double scale, double offset) {
+mono_integral_from (const cv::Mat& src, double scale, double offset) {
     return convert (src, CV_32S, scale, offset);
 }
 
@@ -285,14 +286,15 @@ bitwise_and (const cv::Mat& lhs, const cv::Mat& rhs, const cv::Mat& mask) {
 }
 
 cv::Mat
-bitwise_not (cv::Mat src) {
+bitwise_not (const cv::Mat& src) {
     cv::Mat dst;
     return cv::bitwise_not (src, dst), dst;
 }
 
 cv::Mat
-bitwise_not (cv::Mat src, const cv::Mat& mask) {
-    return cv::bitwise_not (src, src, mask), src;
+bitwise_not (const cv::Mat& src, const cv::Mat& mask) {
+    cv::Mat dst;
+    return cv::bitwise_not (src, dst, mask), dst;
 }
 
 cv::Mat

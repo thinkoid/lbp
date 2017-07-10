@@ -8,4 +8,5 @@ nobase_include_HEADERS =                        \
   lbp/oclbp.hpp                                 \
   lbp/olbp.hpp                                  \
   lbp/olbp.cc                                   \
+  lbp/varlbp.hpp                                \
   lbp/utils.hpp

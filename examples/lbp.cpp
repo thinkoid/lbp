@@ -11,6 +11,7 @@ namespace po = boost::program_options;
 #include <lbp/oclbp.hpp>
 #include <lbp/olbp.hpp>
 #include <lbp/utils.hpp>
+#include <lbp/varlbp.hpp>
 
 #include <options.hpp>
 #include <run.hpp>
@@ -20,68 +21,6 @@ using namespace cv;
 
 #include <boost/timer/timer.hpp>
 namespace timers = boost::timer;
-
-//
-// options_t::options_t is specific to each example:
-//
-options_t::options_t (int argc, char** argv) {
-    {
-        auto tmp = std::make_pair (
-            "program", po::variable_value (std::string (argv [0]), false));
-        map_.insert (tmp);
-    }
-
-    po::options_description generic ("Generic options");
-    po::options_description config ("Configuration options");
-
-    generic.add_options ()
-        ("version,v", "version")
-        ("help,h", "this");
-
-    config.add_options ()
-        ("display,d", "display frames.")
-
-        ("input,i",   po::value< std::string > ()->default_value ("0"),
-         "input (file or stream index).")
-
-        ("algorithm,a", po::value< std::string > ()->default_value ("olbp"),
-         "algorithm");
-
-    desc_ = boost::make_shared< po::options_description > ();
-
-    desc_->add (generic);
-    desc_->add (config);
-
-    store (po::command_line_parser (argc, argv).options (*desc_).run (), map_);
-
-    notify (map_);
-}
-
-////////////////////////////////////////////////////////////////////////
-
-static void
-program_options_from (int& argc, char** argv) {
-    bool complete_invocation = false;
-
-    options_t program_options (argc, argv);
-
-    if (program_options.have ("version")) {
-        std::cout << "OpenCV v3.1\n";
-        complete_invocation = true;
-    }
-
-    if (program_options.have ("help")) {
-        std::cout << program_options.description () << std::endl;
-        complete_invocation = true;
-    }
-
-    if (complete_invocation)
-        exit (0);
-
-    global_options (program_options);
-}
-
-////////////////////////////////////////////////////////////////////////
 
 template< typename F >
 void process_olbp (cv::VideoCapture& cap, const options_t& opts, const F& f) {
@@ -95,16 +34,8 @@ void process_olbp (cv::VideoCapture& cap, const options_t& opts, const F& f) {
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 1 };
 
-        const auto gray_frame = lbp::convert_color (frame, COLOR_BGR2GRAY);
-
-        Mat result;
-
-        {
-            timers::auto_cpu_timer timer;
-            result = f (gray_frame);
-        }
-
-        result = lbp::convert (result, CV_8U, 255. / (F::size + 1));
+        const auto result = lbp::convert (
+            f (lbp::gray_from (frame)), CV_8U, 255. / (F::size + 1));
 
         if (display) {
             imshow (title, result);
@@ -140,8 +71,6 @@ process_olbp_3_32 (cv::VideoCapture& cap, const options_t& opts) {
     process_olbp (cap, opts, lbp::olbp_t< unsigned char, 3, 32 > { });
 }
 
-////////////////////////////////////////////////////////////////////////
-
 static void
 process_oclbp (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
@@ -149,14 +78,9 @@ process_oclbp (cv::VideoCapture& cap, const options_t& opts) {
     const lbp::oclbp_t op;
 
     for (auto& frame : lbp::getframes_from (cap)) {
-        lbp::frame_delay temp { 40 };
+        lbp::frame_delay temp { 1 };
 
-        vector< Mat > images;
-
-        {
-            timers::auto_cpu_timer timer;
-            images = op (frame);
-        }
+        const auto images = op (frame);
 
         if (display) {
             const string s ("Opponent Color LBP");
@@ -174,6 +98,34 @@ process_oclbp (cv::VideoCapture& cap, const options_t& opts) {
             break;
     }
 }
+
+static void
+process_varlbp (cv::VideoCapture& cap, const options_t& opts) {
+    const bool display = opts.have ("display");
+
+    const lbp::varlbp_t op;
+
+    for (const auto& frame : lbp::getframes_from (cap)) {
+        lbp::frame_delay temp { 1 };
+
+        const auto src = lbp::float_from (lbp::gray_from (frame));
+        const auto result = op (src);
+
+        double a, b;
+        minMaxLoc (result, &a, &b);
+
+        const auto normal = lbp::convert (result, CV_32FC1, 1./b);
+
+        if (display) {
+            imshow ("Variance measure operator", normal);
+        }
+
+        if (temp.wait_for_key (27))
+            break;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
 
 static void
 process (cv::VideoCapture& cap, const options_t& opts)
@@ -200,9 +152,34 @@ process (cv::VideoCapture& cap, const options_t& opts)
     else if (a == "oclbp") {
         process_oclbp (cap, opts);
     }
+    else if (a == "varlbp") {
+        process_varlbp (cap, opts);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////
+
+static void
+program_options_from (int& argc, char** argv) {
+    bool complete_invocation = false;
+
+    options_t program_options (argc, argv);
+
+    if (program_options.have ("version")) {
+        std::cout << "OpenCV v3.1\n";
+        complete_invocation = true;
+    }
+
+    if (program_options.have ("help")) {
+        std::cout << program_options.description () << std::endl;
+        complete_invocation = true;
+    }
+
+    if (complete_invocation)
+        exit (0);
+
+    global_options (program_options);
+}
 
 int main (int argc, char** argv) {
     program_options_from (argc, argv);
