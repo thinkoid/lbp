@@ -32,14 +32,14 @@ do_oclbp (const Mat& src, const Mat& ref)
 
 #define T(x, y, z) ((c >= x [y]) << z)
             const unsigned char value =
-                T (p, j - 1, 7) |
-                T (p, j    , 6) |
-                T (p, j + 1, 5) |
-                T (r, j - 1, 1) |
-                T (r, j    , 2) |
-                T (r, j + 1, 3) |
-                T (q, j - 1, 0) |
-                T (q, j + 1, 4);
+                T (p, j - 1, 3) |
+                T (p, j    , 2) |
+                T (p, j + 1, 1) |
+                T (r, j - 1, 5) |
+                T (r, j    , 6) |
+                T (r, j + 1, 7) |
+                T (q, j - 1, 4) |
+                T (q, j + 1, 0);
 #undef T
 
             s [j] = value;

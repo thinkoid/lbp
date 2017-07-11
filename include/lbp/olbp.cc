@@ -8,7 +8,7 @@
 namespace lbp {
 namespace olbp_detail {
 
-inline size_t
+static inline size_t
 count_ones (size_t arg) {
     size_t n = 0;
 
@@ -19,12 +19,12 @@ count_ones (size_t arg) {
     return n;
 }
 
-inline size_t
+static inline size_t
 count_flips (size_t n, size_t P) {
     return count_ones (size_t (((n >> 1) | ((n & 1) << (P - 1))) ^ n));
 }
 
-size_t
+static inline size_t
 uniformity_measure (size_t n, size_t P) {
     const auto a = count_ones (n), b = count_flips (n, P);
     return b < 3 ? a : (P + 1);
@@ -39,8 +39,8 @@ template< typename T, size_t R, size_t P >
 {
     for (size_t i = 0; i < P; ++i) {
         N.emplace_back (
-            nearbyint (-1.0 * R * sin (2. * M_PI * i / P)),
-            nearbyint ( 1.0 * R * cos (2. * M_PI * i / P)));
+            nearbyint (-1. * R * sin (2. * M_PI * i / P)),
+            nearbyint ( 1. * R * cos (2. * M_PI * i / P)));
     }
 }
 
@@ -130,14 +130,14 @@ olbp_t< T, 1, 8 >::operator() (const cv::Mat& src, const cv::Mat& ref) const
 
 #define T(a, b, c) ((center >= a [b]) << c)
             const unsigned char value =
-                T (p, j - 1, 7) |
-                T (p, j    , 6) |
-                T (p, j + 1, 5) |
-                T (r, j - 1, 1) |
-                T (r, j    , 2) |
-                T (r, j + 1, 3) |
-                T (q, j - 1, 0) |
-                T (q, j + 1, 4);
+                T (p, j - 1, 3) |
+                T (p, j    , 2) |
+                T (p, j + 1, 1) |
+                T (r, j - 1, 5) |
+                T (r, j    , 6) |
+                T (r, j + 1, 7) |
+                T (q, j - 1, 4) |
+                T (q, j + 1, 0);
 #undef T
 
             s [j] = U [value];
@@ -180,18 +180,18 @@ olbp_t< T, 2, 12 >::operator() (const cv::Mat& src, const cv::Mat& ref) const
 
 #define T(a, b, c) ((center >= a [b]) << c)
             const unsigned value =
-                T (p, j - 1,  10) |
-                T (p, j,       9) |
-                T (p, j + 1,   8) |
-                T (q, j - 2,  11) |
-                T (q, j + 2,   7) |
-                T (r, j - 2,   0) |
-                T (r, j + 2,   6) |
-                T (s, j - 2,   1) |
-                T (s, j + 2,   5) |
-                T (t, j - 1,   2) |
-                T (t, j,       3) |
-                T (t, j + 1,   4);
+                T (p, j - 1,   4) |
+                T (p, j,       3) |
+                T (p, j + 1,   2) |
+                T (q, j - 2,   5) |
+                T (q, j + 2,   1) |
+                T (r, j - 2,   6) |
+                T (r, j + 2,   0) |
+                T (s, j - 2,   7) |
+                T (s, j + 2,  11) |
+                T (t, j - 1,   8) |
+                T (t, j,       9) |
+                T (t, j + 1,  10);
 #undef T
 
             u [j] = olbp_detail::uniformity_measure (value, 12);
@@ -234,22 +234,22 @@ olbp_t< T, 2, 16 >::operator() (const cv::Mat& src, const cv::Mat& ref) const
 
 #define T(a, b, c) ((center >= a [b]) << c)
             const unsigned value =
-                T (p, j - 1,  13) |
-                T (p, j,      12) |
-                T (p, j + 1,  11) |
-                T (q, j - 2,  15) |
-                T (q, j - 1,  14) |
-                T (q, j + 1,  10) |
-                T (q, j + 2,   9) |
-                T (r, j - 2,   0) |
-                T (r, j + 2,   8) |
-                T (s, j - 2,   1) |
-                T (s, j - 1,   2) |
-                T (s, j + 1,   6) |
-                T (s, j + 2,   7) |
-                T (t, j - 1,   3) |
-                T (t, j,       5) |
-                T (t, j + 1,   4);
+                T (p, j - 1,   5) |
+                T (p, j,       4) |
+                T (p, j + 1,   3) |
+                T (q, j - 2,   7) |
+                T (q, j - 1,   6) |
+                T (q, j + 1,   2) |
+                T (q, j + 2,   1) |
+                T (r, j - 2,   8) |
+                T (r, j + 2,   0) |
+                T (s, j - 2,   9) |
+                T (s, j - 1,  10) |
+                T (s, j + 1,  14) |
+                T (s, j + 2,  15) |
+                T (t, j - 1,  11) |
+                T (t, j,      12) |
+                T (t, j + 1,  13);
 #undef T
 
             u [j] = olbp_detail::uniformity_measure (value, 16);

@@ -56,7 +56,7 @@ refun (const cv::Mat& src)
                 ((src.at< unsigned char > (i + 1, j - 1) > c) << 1) |
                 ((src.at< unsigned char > (i,     j - 1) > c) << 0);
 
-            dst.at< unsigned char > (i - 1, j - 1) = U [value];
+            dst.at< unsigned char > (i, j) = U [value];
         }
     }
 
