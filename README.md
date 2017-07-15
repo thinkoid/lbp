@@ -6,7 +6,7 @@ A collection of Local Binary Pattern (LBP) algorithms.
 
 The implementation requires single-channel images for input and allows for any
 radius and number of neighborhood pixels. The neighborhood is computed using the
-formula in the cited paper<sup>1</sup>, with the elements visited
+formula in the cited paper, with the elements visited
 clockwise. I have supplied a set of specializations for a more efficient
 traversal of neighbors: *(8,1)*, *(10,2)*, *(12,2)*, *(16,2)*:
 
@@ -67,11 +67,43 @@ image needs to be normalized before displaying:
 
     // ... and normalize:
     double a, b;
-    minMaxLoc (&a, &b);
+    minMaxLoc (result, &a, &b);
     
     Mat normal = result.convertTo (normal, CV_32FC1, 1/(b - a), -a);
     
     imshow ("VARLBP", normal);
+
+## CSLBP
+
+As in Center Symmetric LBP, see the citation in the header. The implementation
+follows the description in chapter 2.2, *Feature Extraction with
+Center-Symmetric Local Binary Patterns*. It uses Boost *hana* for some light
+meta. The usage is straighforward, create  the operator object:
+
+    const auto op = lbp::cslbp_t { };
+    
+    // Fetch the source, say, a gray float image:
+    Mat src = ...
+    
+    // Convert the source image with a custom epsilon:
+    const auto result = op.operator()< float > (src, 0.05);
+
+The function call operator of the operator object is templatized on the Mat
+underlying type. There is no requirement on the input image type other than
+being a gray, single-channel.
+
+The destination Mat type is the smallest type that can accommodate the result of
+the operator. E.g., a neighborhood of 12, makes 6 comparisons, generating values
+in the range [0,2<sup>5</sup>], and it requires at least 8 bits to store it,
+i.e., an unsigned char.
+
+Normalize the result into a floating point Mat, range [0,1], and display:
+
+    double a, b;
+    minMaxLoc (result, &a, &b);
+    
+    Mat normal = result.convertTo (normal, CV_32FC1, 1/(b - a), -a);
+    imshow ("CS-LBP", normal);
 
 ## Parallelization
 
@@ -81,9 +113,8 @@ when accounting for the cost of that paradigm the code is as fast or faster than
 other similar implementations. Optimizing the implementation is something I wish
 to do with greater care after some more tinkering with the design.
 
-In the meantime I am using OpenMP in places and the speed gains are impressive
-(and expected). I am pretty sure there are other ways to improve the
-performance, too.
+In the meantime I am using OpenMP in places with nice (expected) results. More
+improvements, soon.
 
 ## Utilities
 
@@ -92,7 +123,7 @@ to me, mostly related to conversion between formats, scaling, etc. Find them in
 `src/utils.cpp`. 
 
 I copied Eric Niebler's getline range code and adapted it to fetching frames
-from a `cv::VideoCapture` object. It's sweet:
+from a `cv::VideoCapture` object. It allows for some sweetness:
 
     cv::VideoCapture cap = ...
     for (const auto& frame : lbp::getframes_from (cap)) {
