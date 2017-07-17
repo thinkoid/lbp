@@ -27,51 +27,48 @@
 
 namespace lbp {
 
-template< typename T, size_t R, size_t P >
+template< size_t R, size_t P >
 struct olbp_t {
-    static constexpr size_t radius = R;
-    static constexpr size_t size = P;
-
-public:
-    explicit olbp_t ();
-
+    template< typename T >
     cv::Mat operator() (const cv::Mat&) const;
-    cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
 
-private:
-    size_t operator() (const cv::Mat&, const cv::Mat&, size_t, size_t) const;
-
-private:
-    std::vector< std::pair< int, int > > N;
-};
-
-template< typename T >
-struct olbp_t< T, 1, 8 > {
-    static constexpr size_t radius = 1;
-    static constexpr size_t size = 8;
-
-public:
-    cv::Mat operator() (const cv::Mat&) const;
+    template< typename T >
     cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
 };
 
-template< typename T >
-struct olbp_t< T, 2, 12 > {
-    static constexpr size_t radius = 2;
-    static constexpr size_t size = 12;
-
-public:
+template< >
+struct olbp_t< 1, 8 > {
+    template< typename T >
     cv::Mat operator() (const cv::Mat&) const;
+
+    template< typename T >
     cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
 };
 
-template< typename T >
-struct olbp_t< T, 2, 16 > {
-    static constexpr size_t radius = 2;
-    static constexpr size_t size = 16;
-
-public:
+template< >
+struct olbp_t< 2, 10 > {
+    template< typename T >
     cv::Mat operator() (const cv::Mat&) const;
+
+    template< typename T >
+    cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
+};
+
+template< >
+struct olbp_t< 2, 12 > {
+    template< typename T >
+    cv::Mat operator() (const cv::Mat&) const;
+
+    template< typename T >
+    cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
+};
+
+template< >
+struct olbp_t< 2, 16 > {
+    template< typename T >
+    cv::Mat operator() (const cv::Mat&) const;
+
+    template< typename T >
     cv::Mat operator() (const cv::Mat&, const cv::Mat&) const;
 };
 

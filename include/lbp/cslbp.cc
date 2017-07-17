@@ -2,6 +2,7 @@
 
 #include <lbp/cslbp.hpp>
 #include <lbp/utils.hpp>
+#include <lbp/detail/neighborhoods.hpp>
 
 #include <functional>
 
@@ -15,7 +16,7 @@ cslbp_t< R, P >::operator() (const cv::Mat& src, const T& epsilon) const
     using namespace cslbp_detail;
     using namespace hana::literals;
 
-    const auto N = cslbp_detail::circular_neighborhood< R, P >;
+    const auto N = detail::semicircular_neighborhood< R, P >;
 
     auto dst = cv::Mat (
         src.size (), opencv_type< (sizeof (value_type) << 3) >,
@@ -44,7 +45,7 @@ cslbp_t< R, P >::operator() (const cv::Mat& src, const T& epsilon) const
                     // the absolute difference value.
                     //
 
-                    return accum + ((std::abs (a - b) > epsilon) << S++);
+                    return accum + ((std::abs (a - b) >= epsilon) << S++);
                 });
         }
     }
