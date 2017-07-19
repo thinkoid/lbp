@@ -35,7 +35,7 @@ cslbp_t< R, P >::operator() (const cv::Mat& src, const T& epsilon) const
                     //
                     // CS-LBP_{R,N,T}(x,y) = \sum_0^{(N/2)-1}s(n_i+n_{i+(N/2)})2^i,
                     // s(x)= \[ \begin{cases}
-                    //          1 & x \geq \epsilon \\
+                    //          1 & x \geq \epsilon
                     //          0 & x <    \epsilon
                     //       \end{cases}
                     //       \]
