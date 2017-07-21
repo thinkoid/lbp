@@ -7,7 +7,10 @@
 
 #include <opencv2/core.hpp>
 
+#include <boost/hana/integral_constant.hpp>
 #include <boost/hana/fold.hpp>
+#include <boost/hana/for_each.hpp>
+#include <boost/hana/size.hpp>
 #include <boost/hana/tuple.hpp>
 
 //
@@ -60,21 +63,25 @@ auto oclbp = [](const cv::Mat& src, const cv::Mat& ref) {
 
 template< typename T, size_t R, size_t P >
 auto oclbp = [](const cv::Mat& src) {
-    static constexpr size_t arr [][2] = {
-        { 0, 0 }, { 1, 1 }, { 2, 2 }, { 1, 0 }, { 2, 0 }, { 2, 1 }
-    };
+    namespace hana = boost::hana;
+    using namespace hana::literals;
 
-    vector< cv::Mat > dsts (6);
+#define T(a, b) hana::tuple_c< int, a, b >
+    static constexpr auto combinations = hana::make_tuple (
+        T (0, 0), T (1, 1), T (2, 2), T (1, 0), T (2, 0), T (2, 1));
+#undef T
+
+    vector< cv::Mat > dsts;
+    dsts.reserve (hana::size (combinations).value);
 
     vector< cv::Mat > planes (3);
     split (src, planes);
 
     auto op = oclbp_detail::oclbp< T, R, P >;
 
-#pragma omp parallel for
-    for (size_t i = 0; i < sizeof arr / sizeof *arr; ++i) {
-        dsts [i] = op (planes [arr [i][0]], planes [arr [i][1]]);
-    }
+    hana::for_each (combinations, [&](auto x) {
+            dsts.emplace_back (op (planes [x [0_c]], planes [x [1_c]]));
+        });
 
     return dsts;
 };
