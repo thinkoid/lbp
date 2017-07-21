@@ -6,9 +6,6 @@
 #include <lbp/detail/neighborhoods.hpp>
 #include <lbp/detail/sampling.hpp>
 
-#include <utility>
-#include <vector>
-
 #include <opencv2/core.hpp>
 
 #include <boost/hana/fold.hpp>
@@ -43,10 +40,11 @@ namespace cslbp_detail {
 
 template< typename T >
 auto cslbp = [](auto neighborhood, auto sampler) {
-    using namespace boost::hana::literals;
-
     return [=](const cv::Mat& src, size_t i, size_t j, const T& epsilon) {
-        return boost::hana::fold (
+        namespace hana = boost::hana;
+        using namespace hana::literals;
+
+        return hana::fold (
             neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
                 const auto a = sampler (src, i + x [0_c], j + x [1_c]);
                 const auto b = sampler (src, i - x [0_c], j - x [1_c]);

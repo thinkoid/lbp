@@ -5,9 +5,6 @@
 #include <lbp/detail/neighborhoods.hpp>
 #include <lbp/detail/sampling.hpp>
 
-#include <utility>
-#include <vector>
-
 #include <opencv2/core.hpp>
 
 #include <boost/hana/integral_constant.hpp>
@@ -45,7 +42,7 @@ auto uniformity_measure = [](size_t arg) {
     for (auto x = ((arg >> 1) | ((arg & 1) << (S - 1))) ^ arg; x; x >>= 1)
         b += x & 1;
 
-    return b < 3 ? a : (P + 1);
+    return b < 3 ? a : (S + 1);
 };
 
 template< typename T >
@@ -74,12 +71,13 @@ auto uniformity_measure< T, 8 > = [](unsigned char value) {
 
 template< typename T >
 auto olbp = [](auto neighborhood, auto sampler) {
-    using namespace boost::hana::literals;
-
     return [=](const cv::Mat& src, size_t i, size_t j) {
+        namespace hana = boost::hana;
+        using namespace hana::literals;
+
         const auto c = src.at< T > (i, j);
 
-        return boost::hana::fold_left (
+        return hana::fold_left (
             neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
                 const auto g = sampler (src, i + x [0_c], j + x [1_c]);
                 return accum | (size_t (c >= g) << S++);
@@ -91,9 +89,12 @@ auto olbp = [](auto neighborhood, auto sampler) {
 
 template< typename T, size_t R, size_t P >
 auto olbp = [](const cv::Mat& src) {
+    namespace hana = boost::hana;
+    using namespace hana::literals;
+
     cv::Mat dst (src.size (), CV_8U);
 
-    auto op = boost::hana::demux
+    auto op = hana::demux
         (olbp_detail::uniformity_measure< unsigned char, P >)
         (olbp_detail::olbp< T > (
             detail::circular_neighborhood< R, P >,

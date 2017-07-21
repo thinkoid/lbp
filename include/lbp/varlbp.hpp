@@ -5,12 +5,10 @@
 #include <lbp/detail/neighborhoods.hpp>
 #include <lbp/detail/sampling.hpp>
 
-#include <utility>
-#include <vector>
-
 #include <opencv2/core.hpp>
 
 #include <boost/hana/fold.hpp>
+#include <boost/hana/size.hpp>
 #include <boost/hana/tuple.hpp>
 
 //
@@ -35,12 +33,15 @@ namespace varlbp_detail {
 
 template< typename T >
 auto varlbp = [](auto neighborhood, auto sampler) {
-    using namespace boost::hana::literals;
+    namespace hana = boost::hana;
+    using namespace hana::literals;
+
+    const auto N = hana::size (neighborhood).value - 1;
 
     return [=](const cv::Mat& src, size_t i, size_t j) {
         double d = 0., m = 0.;
 
-        const auto s = boost::hana::fold_left (
+        const auto s = hana::fold_left (
             neighborhood, 0, [&, k = 0](auto accum, auto c) mutable {
                 const auto x = sampler (src, i + c [0_c], j + c [1_c]);
 
@@ -50,7 +51,7 @@ auto varlbp = [](auto neighborhood, auto sampler) {
                 return accum + d * (x - m);
             });
 
-        return s/7.;
+        return s / N;
     };
 };
 

@@ -5,9 +5,6 @@
 #include <lbp/detail/neighborhoods.hpp>
 #include <lbp/detail/sampling.hpp>
 
-#include <utility>
-#include <vector>
-
 #include <opencv2/core.hpp>
 
 #include <boost/hana/fold.hpp>
@@ -27,12 +24,13 @@ namespace oclbp_detail {
 
 template< typename T >
 auto do_oclbp = [](auto neighborhood, auto sampler) {
-    using namespace boost::hana::literals;
-
     return [=](const cv::Mat& src, const cv::Mat& ref, size_t i, size_t j) {
+        namespace hana = boost::hana;
+        using namespace hana::literals;
+
         const auto c = ref.at< T > (i, j);
 
-        return boost::hana::fold_left (
+        return hana::fold_left (
             neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
                 const auto g = sampler (src, i + x [0_c], j + x [1_c]);
                 return accum | (size_t (c >= g) << S++);
