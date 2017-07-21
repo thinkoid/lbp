@@ -2,11 +2,16 @@
 #define LBP_VARLBP_HPP
 
 #include <lbp/defs.hpp>
+#include <lbp/detail/neighborhoods.hpp>
+#include <lbp/detail/sampling.hpp>
 
 #include <utility>
 #include <vector>
 
 #include <opencv2/core.hpp>
+
+#include <boost/hana/fold.hpp>
+#include <boost/hana/tuple.hpp>
 
 //
 // @inproceedings{Ojala:2001:GLB:646260.685274,
@@ -26,10 +31,49 @@
 //
 
 namespace lbp {
+namespace varlbp_detail {
 
-struct varlbp_t {
-    cv::Mat operator() (const cv::Mat&) const;
+template< typename T >
+auto varlbp = [](auto neighborhood, auto sampler) {
+    using namespace boost::hana::literals;
+
+    return [=](const cv::Mat& src, size_t i, size_t j) {
+        double d = 0., m = 0.;
+
+        const auto s = boost::hana::fold_left (
+            neighborhood, 0, [&, k = 0](auto accum, auto c) mutable {
+                const auto x = sampler (src, i + c [0_c], j + c [1_c]);
+
+                d = x - m;
+                m += d / ++k;
+
+                return accum + d * (x - m);
+            });
+
+        return s/7.;
+    };
 };
+
+} // namespace varlbp_detail
+
+template< typename T, size_t R, size_t P >
+auto varlbp = [](const cv::Mat& src) {
+    cv::Mat dst (src.size (), src.type (), cv::Scalar (0));
+
+    auto op = varlbp_detail::varlbp< T > (
+        detail::circular_neighborhood< R, P >,
+        detail::bilinear_sampler< T >);
+
+#pragma omp parallel for
+    for (size_t i = R; i < src.rows - R - 1; ++i) {
+        for (size_t j = R; j < src.cols - R - 1; ++j) {
+            dst.at< T > (i, j) = op (src, i, j);
+        }
+    }
+
+    return dst;
+};
+
 
 } // namespace lbp
 

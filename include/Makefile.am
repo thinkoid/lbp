@@ -6,7 +6,6 @@ nobase_include_HEADERS =                        \
   lbp/defs.hpp                                  \
   lbp/frame_range.hpp                           \
   lbp/detail/neighborhoods.hpp                  \
-  lbp/cslbp.cc                                  \
   lbp/cslbp.hpp                                 \
   lbp/oclbp.hpp                                 \
   lbp/olbp.cc                                   \

@@ -7,24 +7,13 @@ A collection of Local Binary Pattern (LBP) algorithms.
 The implementation requires single-channel images for input and allows for any
 radius and number of neighborhood pixels. The neighborhood is computed using the
 formula in the cited paper, with the elements visited
-clockwise. I have supplied a set of specializations for a more efficient
-traversal of neighbors: *(8,1)*, *(10,2)*, *(12,2)*, *(16,2)*:
+clockwise. I have supplied a specializations for a more efficient traversal of
+neighbors for *(8,1)* case:
 
     // One plane frame:
-    lbp::olbp_t< unsigned char, 1, 8 > op;
+    auto op = lbp::olbp< unsigned char, 1, 8 >;
     auto result = op (frame);
 
-Last but not least, the central pixel for a neighborhood and the neighborhood
-itself can belong to different planes, e.g.:
-
-    // E.g., split a 3-plane, RGB frame:
-    vector< Mat > planes;
-    split (frame, planes);
-    
-    // Apply pperator on plane 0 neighbors, against center from plane 1:
-    lbp::olbp_t< unsigned char, 1, 8 > op;
-    auto result = op (plane [0], plane [1]);
-    
 ## OCLBP
 
 The implementation requires a 3-plane image and assumes that incoming frames are
@@ -42,7 +31,7 @@ neighbors between pairs of planes:
 The code to apply the operator and display the images can be as simple as this
 (using Boost format):
 
-    const auto op = lbp::oclbp_t { };
+    const auto op = lbp::oclbp< unsigned char, 1, 8 >;
     
     // Fetch frames ...
     const auto images = op (frame);
@@ -60,7 +49,7 @@ applies the operator over a neighborhood of 8 pixels, using the Welford online
 algorithm for calculating variance. The variance values may go above 1.0, so the
 image needs to be normalized before displaying:
 
-    const auto op = lbp::varlbp_t { };
+    const auto op = lbp::varlbp< unsigned char, 1, 8 >;
 
     // Fetch frames ...
     const auto result = op (src);
@@ -80,17 +69,16 @@ follows the description in chapter 2.2, *Feature Extraction with
 Center-Symmetric Local Binary Patterns*. It uses Boost *hana* for some light
 meta. The usage is straighforward, create  the operator object:
 
-    const auto op = lbp::cslbp_t { };
+    auto op = lbp::cslbp< float, 2, 8 >;
     
     // Fetch the source, say, a gray float image:
     Mat src = ...
     
     // Convert the source image with a custom epsilon:
-    const auto result = op.operator()< float > (src, 0.05);
+    const auto result = op (src, 0.05);
 
-The function call operator of the operator object is templatized on the Mat
-underlying type. There is no requirement on the input image type other than
-being a gray, single-channel.
+There is no requirement on the input image type other than being a gray,
+single-channel. 
 
 The destination Mat type is the smallest type that can accommodate the result of
 the operator. E.g., a neighborhood of 12, makes 6 comparisons, generating values

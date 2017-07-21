@@ -17,7 +17,7 @@ static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
-    const auto op = lbp::oclbp_t { };
+    const auto op = lbp::oclbp< unsigned char, 1, 8 >;
 
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };

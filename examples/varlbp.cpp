@@ -31,14 +31,13 @@ static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
-    const auto op = lbp::varlbp_t { };
+    auto op = lbp::varlbp< float, 1, 8 >;
 
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };
 
         const auto src = lbp::float_from (lbp::gray_from (frame));
         const auto result = op (src);
-
 
         if (display) {
             imshow ("Ojala (2001) VAR operator", normalize (result));

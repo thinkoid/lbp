@@ -76,10 +76,10 @@ void BM_refun (benchmark::State& state) {
 void BM_olbp (benchmark::State& state) {
     Mat src (state.range (0), state.range (0), CV_8U);
 
-    const auto op = lbp::olbp_t< 1, 8 > { };
+    auto op = lbp::olbp< unsigned char, 1, 8 >;
 
     while (state.KeepRunning ()) {
-        DoNotOptimize (op.operator()< unsigned char > (src));
+        DoNotOptimize (op (src));
     }
 };
 

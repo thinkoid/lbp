@@ -14,14 +14,13 @@ static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
-    const auto op = lbp::olbp_t< 2, 10 > { };
+    auto op = lbp::olbp< unsigned char, 2, 10 >;
 
     for (auto& frame : lbp::getframes_from (cap)) {
-        lbp::frame_delay temp { 20 };
+        lbp::frame_delay temp { 0 };
 
         const auto result = lbp::convert (
-            op.operator()< unsigned char > (
-                lbp::gray_from (frame)), CV_8U, 255./11);
+            op (lbp::gray_from (frame)), CV_8U, 255./11);
 
         if (display) {
             imshow ("Ojala (2001) LBP operator", result);

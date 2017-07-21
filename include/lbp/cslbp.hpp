@@ -2,15 +2,16 @@
 #define LBP_CSLBP_HPP
 
 #include <lbp/defs.hpp>
+#include <lbp/utils.hpp>
+#include <lbp/detail/neighborhoods.hpp>
+#include <lbp/detail/sampling.hpp>
 
 #include <utility>
 #include <vector>
 
 #include <opencv2/core.hpp>
 
-#include <boost/hana/fwd/take_front.hpp>
 #include <boost/hana/fold.hpp>
-#include <boost/hana/range.hpp>
 #include <boost/hana/tuple.hpp>
 
 #include <boost/integer.hpp>
@@ -40,34 +41,44 @@
 namespace lbp {
 namespace cslbp_detail {
 
-template< size_t, size_t, typename = boost::hana::when< true > >
-struct cslbp_base_t;
+template< typename T >
+auto cslbp = [](auto neighborhood, auto sampler) {
+    using namespace boost::hana::literals;
 
-template< size_t R_, size_t P_ >
-struct cslbp_base_t< R_, P_, boost::hana::when < (P_ % 2 == 0) > >
-{
-    using value_type = typename boost::uint_t< (P_ + 1) / 2 >::least;
-
-    static constexpr size_t R = R_;
-    static constexpr size_t P = P_;
+    return [=](const cv::Mat& src, size_t i, size_t j, const T& epsilon) {
+        return boost::hana::fold (
+            neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
+                const auto a = sampler (src, i + x [0_c], j + x [1_c]);
+                const auto b = sampler (src, i - x [0_c], j - x [1_c]);
+                return accum + ((std::abs (a - b) >= epsilon) << S++);
+            });
+    };
 };
 
 } // namespace cslbp_detail
 
-template< size_t R, size_t P >
-struct cslbp_t : cslbp_detail::cslbp_base_t< R, P > {
-    using base_type = cslbp_detail::cslbp_base_t< R, P >;
-    using value_type = typename base_type::value_type;
+template< typename T, size_t R, size_t P >
+auto cslbp = [](const cv::Mat& src, const T& epsilon = T { }) {
+    using value_type = typename boost::uint_t< P >::least;
+        
+    cv::Mat dst (
+        src.size (), opencv_type< (sizeof (value_type) << 3) >,
+        cv::Scalar (0));
 
-public:
-    explicit cslbp_t () { }
+    auto op = cslbp_detail::cslbp< T > (
+        detail::semicircular_neighborhood< R, P >,
+        detail::nearest_sampler< T >);
 
-    template< typename T >
-    cv::Mat operator() (const cv::Mat&, const T& = T ()) const;
+#pragma omp parallel for
+    for (size_t i = R; i < src.rows - R; ++i) {
+        for (size_t j = R; j < src.cols - R; ++j) {
+            dst.at< unsigned char > (i, j) = op (src, i, j, epsilon);
+        }
+    }
+
+    return dst;
 };
 
 } // namespace lbp
-
-#include <lbp/cslbp.cc>
 
 #endif // LBP_CSLBP_HPP
