@@ -30,16 +30,18 @@ namespace csldp_detail {
 template< typename T >
 auto csldp = [](auto neighborhood, auto sampler) {
     return [=](const cv::Mat& src, size_t i, size_t j, const T& e) {
+        using namespace cv;
+
         namespace hana = boost::hana;
         using namespace hana::literals;
 
-        const auto c = src.at< T > (i, j);
+        const auto c = saturate_cast< T > (src.at< T > (i, j) + e);
 
         return hana::fold (
             neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
                 const auto a = sampler (src, i + x [0_c], j + x [1_c]);
                 const auto b = sampler (src, i - x [0_c], j - x [1_c]);
-                return accum | (((a >= c + e) ^ (b >= c + e)) << S++);
+                return accum | (((a >= c) ^ (b >= c)) << S++);
             });
     };
 };

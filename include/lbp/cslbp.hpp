@@ -41,6 +41,8 @@ namespace cslbp_detail {
 template< typename T >
 auto cslbp = [](auto neighborhood, auto sampler) {
     return [=](const cv::Mat& src, size_t i, size_t j, const T& epsilon) {
+        using namespace cv;
+
         namespace hana = boost::hana;
         using namespace hana::literals;
 
@@ -48,7 +50,7 @@ auto cslbp = [](auto neighborhood, auto sampler) {
             neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
                 const auto a = sampler (src, i + x [0_c], j + x [1_c]);
                 const auto b = sampler (src, i - x [0_c], j - x [1_c]);
-                return accum + ((std::abs (a - b) >= epsilon) << S++);
+                return accum + ((a >= saturate_cast< T > (b + epsilon)) << S++);
             });
     };
 };
