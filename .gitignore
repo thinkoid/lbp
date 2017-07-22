@@ -45,3 +45,4 @@ stamp-h1
 test-driver
 tests/perf/olbp
 /examples/cslbp
+/examples/csldp
