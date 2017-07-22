@@ -59,7 +59,9 @@ template< typename T, size_t R, size_t P >
 auto cslbp = [](const cv::Mat& src, const T& epsilon = T { }) {
     using value_type = typename boost::uint_t< P >::least;
         
-    cv::Mat dst (src.size (), opencv_type< (sizeof (value_type) << 3) >);
+    cv::Mat dst (
+        src.size (), opencv_type< (sizeof (value_type) << 3) >,
+        cv::Scalar (0));
 
     auto op = cslbp_detail::cslbp< T > (
         detail::semicircular_neighborhood< R, P >,
