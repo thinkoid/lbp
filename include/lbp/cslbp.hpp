@@ -70,7 +70,7 @@ auto cslbp = [](const cv::Mat& src, const T& epsilon = T { }) {
 #pragma omp parallel for
     for (size_t i = R; i < src.rows - R; ++i) {
         for (size_t j = R; j < src.cols - R; ++j) {
-            dst.at< unsigned char > (i, j) = op (src, i, j, epsilon);
+            dst.at< value_type > (i, j) = op (src, i, j, epsilon);
         }
     }
 

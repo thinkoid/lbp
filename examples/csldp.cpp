@@ -31,12 +31,12 @@ static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
-    auto op = lbp::csldp< float, 2, 8 >;
+    auto op = lbp::csldp< float, 2, 12 >;
 
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };
 
-        const auto dst = op (lbp::float_from (lbp::gray_from (frame)));
+        const auto dst = op (lbp::float_from (lbp::gray_from (frame)), .01);
 
         if (display) {
             imshow ("Second Order Center-Symmetric LBP", normalize (dst));

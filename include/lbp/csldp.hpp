@@ -29,7 +29,7 @@ namespace csldp_detail {
 
 template< typename T >
 auto csldp = [](auto neighborhood, auto sampler) {
-    return [=](const cv::Mat& src, size_t i, size_t j) {
+    return [=](const cv::Mat& src, size_t i, size_t j, const T& e) {
         namespace hana = boost::hana;
         using namespace hana::literals;
 
@@ -39,7 +39,7 @@ auto csldp = [](auto neighborhood, auto sampler) {
             neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
                 const auto a = sampler (src, i + x [0_c], j + x [1_c]);
                 const auto b = sampler (src, i - x [0_c], j - x [1_c]);
-                return accum | (((a >= c) ^ (b >= c)) << S++);
+                return accum | (((a >= c + e) ^ (b >= c + e)) << S++);
             });
     };
 };
@@ -47,7 +47,7 @@ auto csldp = [](auto neighborhood, auto sampler) {
 } // namespace csldp_detail
 
 template< typename T, size_t R, size_t P >
-auto csldp = [](const cv::Mat& src) {
+auto csldp = [](const cv::Mat& src, const T& epsilon = T { }) {
     using value_type = typename boost::uint_t< P >::least;
 
     cv::Mat dst (
@@ -56,12 +56,12 @@ auto csldp = [](const cv::Mat& src) {
 
     auto op = csldp_detail::csldp< T > (
         detail::semicircular_neighborhood< R, P >,
-        detail::nearest_sampler< T >);
+        detail::bilinear_sampler< T >);
 
 #pragma omp parallel for
-    for (size_t i = R; i < src.rows - R; ++i) {
-        for (size_t j = R; j < src.cols - R; ++j) {
-            dst.at< unsigned char > (i, j) = op (src, i, j);
+    for (size_t i = R; i < src.rows - R - 1; ++i) {
+        for (size_t j = R; j < src.cols - R - 1; ++j) {
+            dst.at< value_type > (i, j) = op (src, i, j, epsilon);
         }
     }
 
