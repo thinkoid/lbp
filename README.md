@@ -6,9 +6,8 @@ A collection of Local Binary Pattern (LBP) algorithms.
 
 The implementation requires single-channel images for input and allows for any
 radius and number of neighborhood pixels. The neighborhood is computed using the
-formula in the cited paper, with the elements visited
-clockwise. I have supplied a specializations for a more efficient traversal of
-neighbors for *(8,1)* case:
+formula in the cited paper, with the elements visited clockwise. I have supplied
+a specializations for a more efficient traversal of neighbors for *(8,1)* case:
 
     // One plane frame:
     auto op = lbp::olbp< unsigned char, 1, 8 >;
@@ -41,7 +40,7 @@ The code to apply the operator and display the images can be as simple as this
     for (const auto& image : images) {
         imshow ((format ("OCLBP, frame %1%") % (i++)).str (), image);
     }
-
+    
 ## VARLBP
 
 The implementation requires a single-plane, floating point image for input. It
@@ -92,6 +91,21 @@ Normalize the result into a floating point Mat, range [0,1], and display:
     
     Mat normal = result.convertTo (normal, CV_32FC1, 1/(b - a), -a);
     imshow ("CS-LBP", normal);
+
+## CSLDP
+
+The operator amounts to computing the second derivative in the center pixel (it
+detects a minimum or maximum in the center pixel) and concatenates the bits for
+each center-symmetric triplet of pixels. See the example for how to use it.
+
+## SILTP
+
+The operator encodes three states (binary 01, 10, 00) for whether the
+neighborhood pixel is larger, smaller, or neither, than the value at the center
+pixel, with a τ-sized margin around it. The concatenation of the binary strings
+for all neighbors gives the result of the operator. This result is twice as
+large as the operators that encode just two states, so the largest neighborhood
+is 16. See the example.
 
 ## Parallelization
 
