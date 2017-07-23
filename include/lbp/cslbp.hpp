@@ -59,7 +59,7 @@ auto cslbp = [](auto neighborhood, auto sampler) {
 
 template< typename T, size_t R, size_t P >
 auto cslbp = [](const cv::Mat& src, const T& epsilon = T { }) {
-    using value_type = typename boost::uint_t< P >::least;
+    using value_type = typename boost::uint_t< P/2 >::least;
         
     cv::Mat dst (
         src.size (), opencv_type< (sizeof (value_type) << 3) >,
