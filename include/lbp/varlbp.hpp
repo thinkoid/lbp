@@ -58,8 +58,8 @@ auto varlbp = [](auto neighborhood, auto sampler) {
 } // namespace varlbp_detail
 
 template< typename T, size_t R, size_t P >
-auto varlbp = [](const cv::Mat& src) {
-    cv::Mat dst (src.size (), src.type ());
+auto varlbp = [](const cv::Mat& src) -> cv::Mat {
+    cv::Mat dst (src.size (), src.type (), cv::Scalar (0));
 
     auto op = varlbp_detail::varlbp< T > (
         detail::circular_neighborhood< R, P >,

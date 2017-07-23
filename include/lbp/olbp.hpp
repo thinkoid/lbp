@@ -88,11 +88,11 @@ auto olbp = [](auto neighborhood, auto sampler) {
 } // namespace olbp_detail
 
 template< typename T, size_t R, size_t P >
-auto olbp = [](const cv::Mat& src) {
+auto olbp = [](const cv::Mat& src) -> cv::Mat {
     namespace hana = boost::hana;
     using namespace hana::literals;
 
-    cv::Mat dst (src.size (), CV_8U);
+    cv::Mat dst (src.size (), CV_8U, cv::Scalar (0));
 
     auto op = hana::demux
         (olbp_detail::uniformity_measure< unsigned char, P >)
