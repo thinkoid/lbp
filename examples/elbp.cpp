@@ -22,36 +22,20 @@ using namespace cv;
 #include <run.hpp>
 
 auto minmax_ = [](const Mat& src) {
-    double a, b;
-    minMaxLoc (src, &a, &b);
-    return hana::make_tuple (a, b);
+    const auto x = lbp::minmax (src);
+    return hana::make_tuple (x.first, x.second);
 };
 
 auto bgr2gray = [](const cv::Mat& src) {
-    Mat dst;
-    return cv::cvtColor (src, dst, cv::COLOR_BGR2GRAY), dst;
+    return lbp::bgr2gray (src);
 };
 
-auto normalize_float = [&](const cv::Mat& src) {
-    Mat dst;
-
-    const auto x = minmax_ (src);
-    src.convertTo (dst, CV_32F, 1./(x [1_c] - x [0_c]), -x [0_c]);
-
-    return dst;
+auto gray2float = [](const cv::Mat& src) {
+    return lbp::gray2float (src);
 };
 
-auto normalize_gray = [&](const cv::Mat& src) {
-    Mat dst;
-
-    const auto x = minmax_ (src);
-    src.convertTo (dst, CV_8U, 255./(x [1_c] - x [0_c]), -x [0_c]);
-
-    return dst;
-};
-
-auto null_op = [](const cv::Mat& src) {
-    return src.clone ();
+auto equalize = [](const cv::Mat& src) {
+    return lbp::equalize (src);
 };
 
 static void
@@ -62,8 +46,7 @@ f (cv::VideoCapture& cap, const options_t& opts) {
     auto varlbp = lbp::varlbp< float, 1, 8 >;
 
     auto op = hana::compose (
-        normalize_float, varlbp, normalize_float, normalize_gray, olbp,
-        bgr2gray);
+        equalize, varlbp, gray2float, equalize, olbp, bgr2gray);
 
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };
