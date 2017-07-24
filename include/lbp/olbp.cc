@@ -8,7 +8,7 @@ template< typename T >
 auto olbp< T, 1, 8 > = [](const cv::Mat& src) {
     static auto U = olbp_detail::uniformity_measure< T, 8 >;
 
-    cv::Mat dst (src.size (), CV_8U);
+    cv::Mat dst (src.size (), CV_8U, cv::Scalar (0));
 
 #pragma omp parallel for
     for (int i = 1; i < src.rows - 1; ++i) {

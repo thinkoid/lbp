@@ -19,11 +19,10 @@ f (cv::VideoCapture& cap, const options_t& opts) {
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };
 
-        const auto result = lbp::convert (
-            op (lbp::gray_from (frame)), CV_8U, 255./11);
+        const auto result = op (lbp::bgr2gray (frame));
 
         if (display) {
-            imshow ("Ojala (2001) LBP operator", result);
+            imshow ("Ojala (2001) LBP operator", lbp::equalize (result));
         }
 
         if (temp.wait_for_key (27))

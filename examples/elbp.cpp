@@ -58,8 +58,8 @@ static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
-    auto olbp = lbp::olbp< unsigned char, 2, 10 >;
-    auto varlbp = lbp::varlbp< float, 2, 10 >;
+    auto olbp = lbp::olbp< unsigned char, 1, 8 >;
+    auto varlbp = lbp::varlbp< float, 1, 8 >;
 
     auto op = hana::compose (
         normalize_float, varlbp, normalize_float, normalize_gray, olbp,

@@ -13,20 +13,6 @@ using namespace std;
 
 using namespace cv;
 
-static tuple< double, double >
-minmax_of (const Mat& src) {
-    double a, b;
-    minMaxLoc (src, &a, &b);
-    return { a, b };
-}
-
-static Mat
-normalize (const Mat& src) {
-    double a, b;
-    tie (a, b) = minmax_of (src);
-    return lbp::convert (src, CV_32FC1, 1/(b - a), -a);
-}
-
 static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
@@ -36,10 +22,10 @@ f (cv::VideoCapture& cap, const options_t& opts) {
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };
 
-        const auto dst = op (lbp::float_from (lbp::gray_from (frame)), .01);
+        const auto dst = op (lbp::gray2float (lbp::bgr2gray (frame)), .01);
 
         if (display) {
-            imshow ("Second Order Center-Symmetric LBP", normalize (dst));
+            imshow ("Second Order Center-Symmetric LBP", lbp::equalize (dst));
         }
 
         if (temp.wait_for_key (27))

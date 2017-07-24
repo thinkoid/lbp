@@ -13,20 +13,6 @@ using namespace std;
 #include <opencv2/core.hpp>
 using namespace cv;
 
-static tuple< double, double >
-minmax_of (const Mat& src) {
-    double a, b;
-    minMaxLoc (src, &a, &b);
-    return { a, b };
-}
-
-static Mat
-normalize (const Mat& src) {
-    double a, b;
-    tie (a, b) = minmax_of (src);
-    return lbp::convert (src, CV_32FC1, 1/(b - a), -a);
-}
-
 static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
@@ -36,11 +22,11 @@ f (cv::VideoCapture& cap, const options_t& opts) {
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };
 
-        const auto src = lbp::float_from (lbp::gray_from (frame));
+        const auto src = lbp::gray2float (lbp::bgr2gray (frame));
         const auto result = op (src);
 
         if (display) {
-            imshow ("Ojala (2001) VAR operator", normalize (result));
+            imshow ("Ojala (2001) VAR operator", lbp::equalize (result));
         }
 
         if (temp.wait_for_key (27))
