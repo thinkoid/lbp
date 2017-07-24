@@ -93,6 +93,22 @@ integral OpenCV type ([2010Liao](#2010Liao)).
 
 The 2D center-symmetric version of the above ([2014Wu](#2014Wu)).
 
+## E-LBP
+
+Described in [2012Mdakane](#2012Mdakane) -- an application of both Ojala LBP
+operator ([2001Ojala](#2001Ojala)) and the Ojala VAR-LBP operator ([2002Ojala](#2002Ojala)). 
+It is implemented as a standalone example with a composition of elementary
+operations:
+
+- conversion of image to grayscale
+- application of Ojala LBP operator
+- histogram equalization
+- conversion of image to floating point
+- application of VAR-LBP operator
+- last histogram equalization
+
+OLBP and VARLBP radius and neighborhood size can be different, see the example. 
+
 ## Parallelization
 
 The implementations are reasonably streamlined within the boundaries of their
@@ -157,3 +173,7 @@ on.* IEEE, 2010.
 <a name="2014Wu">[2014Wu]</a> Wu, Hefeng, et al. "Real-time background
 subtraction-based video surveillance of people by integrating local texture
 patterns." *Signal, Image and Video Processing* 8.4 (2014): 665-676. 
+
+<a name="2012Mdakane">[2012Mdakane]</a> Mdakane, L., and F. Van den
+Bergh. "Extended local binary pattern features for improving settlement type
+classification of quickbird images." (2012). 
