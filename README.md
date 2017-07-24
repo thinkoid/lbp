@@ -20,12 +20,12 @@ I have supplied a specialization for a more efficient traversal of neighbors for
     auto op = lbp::olbp< unsigned char, 1, 8 >;
     auto result = op (frame);
 
-## OCLBP
+## OC-LBP
 
 The implementation requires a 3-plane image and assumes that incoming frames are
 RGB (not BGR). It computes a set of 6 frames out of each incoming frame, where
 each of the six is a plain application of Ojala LBP operator of radius 1 and 8
-neighbors between pairs of planes ([2002Mäenpää](#2002Mäenpa)): 
+neighbors between pairs of planes ([2002Mäenpää](#2002Mäenpää), [2003Mäenpää](#2003Mäenpää)):
 
 - R v. R
 - G v. G
@@ -45,10 +45,10 @@ The code to apply the operator and display the images can be as simple as this
     size_t i = 0;
     
     for (const auto& image : images) {
-        imshow ((format ("OCLBP, frame %1%") % (i++)).str (), image);
+        imshow ((format ("OC-LBP, frame %1%") % (i++)).str (), image);
     }
     
-## VARLBP
+## VAR-LBP
 
 The implementation requires a single-plane, floating point image for input
 ([2002Ojala](#2002Ojala)). It applies the operator over a neighborhood of 8 pixels, using
@@ -60,7 +60,7 @@ the Welford online algorithm for calculating variance. Usage:
 Visualizing the result requires scaling the resulting floating point image
 values to fit in `[0,1]`.
 
-## CSLBP
+## CS-LBP
 
 As in Center-Symmetric LBP ([2006Heikkilä](#2006Heikkilä)). The implementation follows the
 description in chapter 2.2, *Feature Extraction with Center-Symmetric Local
@@ -77,7 +77,7 @@ the operator. E.g., a neighborhood of 12, makes 6 comparisons, generating values
 in the range [0,2<sup>5</sup>], and it requires at least 8 bits to store it,
 i.e., an unsigned char.
 
-## CSLDP
+## CS-LDP
 
 The operator amounts to computing the second derivative in the center pixel (it
 detects a minimum or maximum in the center pixel) and concatenates the bits for
@@ -107,7 +107,22 @@ operations:
 - application of VAR-LBP operator
 - last histogram equalization
 
-OLBP and VARLBP radius and neighborhood size can be different, see the example. 
+OLBP and VAR-LBP radius and neighborhood size can be different, see the
+example. 
+
+## XCS-LBP
+
+A variant of CS-LBP (see [2006Heikkilä](#2006Heikkilä)) that incorporates the value of the
+center pixel in the descriptor ([2015Silva](#2015Silva)). As with CS-LBP, the resulting
+Mat type is the smallest type that has enough bits to encode the descriptor, and
+is dependent on the (half) size of the neighborhood.
+
+There is no explanation on the omission of a threshold similar to the one in
+CS-LBP other than: "It is worth noting that the threshold function does not need
+a user-defined threshold value, contrary to CS-LBP". It is not clear how an
+explicit global threshold is replaced by "...by thresholding the neighbourhood
+of each pixel with the center value...". Therefore, I left in place a threshold
+argument, similar to the one in CS-LBP, defaulted to 0.
 
 ## Parallelization
 
@@ -152,6 +167,10 @@ on Advances in Pattern Recognition.* Springer, Berlin, Heidelberg, 2001.
 discrimination. *Proc. 16th International Conference on Pattern Recognition*,
 Québec City, Canada, 1: 668–671.
 
+<a name="2003Mäenpää">[2003Mäenpää]</a> Mäenpää, Topi. The local binary pattern
+approach to texture analysis: extensions and applications. Oulun yliopisto,
+2003.
+
 <a name="2002Ojala">[2002Ojala]</a> Ojala, Timo, Matti Pietikainen, and Topi
 Maenpaa. "Multiresolution gray-scale and rotation invariant texture
 classification with local binary patterns." *IEEE Transactions on pattern
@@ -177,3 +196,9 @@ patterns." *Signal, Image and Video Processing* 8.4 (2014): 665-676.
 <a name="2012Mdakane">[2012Mdakane]</a> Mdakane, L., and F. Van den
 Bergh. "Extended local binary pattern features for improving settlement type
 classification of quickbird images." (2012). 
+
+<a name="2015Silva">[2012Mdakane]</a> Silva, Caroline, Thierry Bouwmans, and
+Carl Frélicot. "An eXtended center-symmetric local binary pattern for background
+modeling and subtraction in videos." International Joint Conference on Computer
+Vision, Imaging and Computer Graphics Theory and Applications,
+VISAPP 2015. 2015. 

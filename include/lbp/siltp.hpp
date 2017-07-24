@@ -14,16 +14,14 @@
 #include <boost/integer.hpp>
 
 //
-// @article{wu2014real,
-//   title={Real-time background subtraction-based video surveillance of people by integrating local texture patterns},
-//   author={Wu, Hefeng and Liu, Ning and Luo, Xiaonan and Su, Jiawei and Chen, Liangshi},
-//   journal={Signal, Image and Video Processing},
-//   volume={8},
-//   number={4},
-//   pages={665--676},
-//   year={2014},
-//   publisher={Springer}
-// }
+// @inproceedings{liao2010modeling,
+//   title={Modeling pixel process with scale invariant local patterns for background subtraction in complex scenes},
+//   author={Liao, Shengcai and Zhao, Guoying and Kellokumpu, Vili and Pietik{\"a}inen, Matti and Li, Stan Z},
+//   booktitle={Computer Vision and Pattern Recognition (CVPR), 2010 IEEE Conference on},
+//   pages={1301--1306},
+//   year={2010},
+//   organization={IEEE}
+// }/
 //
 
 namespace lbp {

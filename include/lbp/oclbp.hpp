@@ -21,6 +21,13 @@
 //   publisher={Oulun yliopisto}
 // }
 //
+// @book{maenpaa2003local,
+//   title={The local binary pattern approach to texture analysis: extensions and applications},
+//   author={M{\"a}enp{\"a}{\"a}, Topi},
+//   year={2003},
+//   publisher={Oulun yliopisto}
+// }
+//
 
 namespace lbp {
 namespace oclbp_detail {
