@@ -22,8 +22,8 @@ f (cv::VideoCapture& cap, const options_t& opts) {
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };
 
-        const auto src = lbp::gray2float (lbp::bgr2gray (frame));
-        const auto result = op (src);
+        const auto result = op (
+            lbp::gray2float (lbp::bgr2gray (frame)));
 
         if (display) {
             imshow ("Ojala (2001) VAR operator", lbp::equalize (result));
