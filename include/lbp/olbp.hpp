@@ -88,7 +88,7 @@ auto olbp = [](auto neighborhood, auto sampler) {
 } // namespace olbp_detail
 
 template< typename T, size_t R, size_t P >
-auto olbp = [](const cv::Mat& src) -> cv::Mat {
+auto olbp = [](const cv::Mat& src) {
     namespace hana = boost::hana;
     using namespace hana::literals;
 
