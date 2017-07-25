@@ -10,6 +10,8 @@
 #define LBP_CHECK  BOOST_CHECK
 #define LBP_VERIFY BOOST_VERIFY
 
+#define LBP_STATIC_ASSERT(x) BOOST_STATIC_ASSERT (x)
+#define LBP_STATIC_ASSERT_MSG(x, msg) BOOST_STATIC_ASSERT_MSG (x, msg)
 #define LBP_ASSERT(x) BOOST_ASSERT (x)
 #define LBP_UNUSED(x) ((void)x)
 

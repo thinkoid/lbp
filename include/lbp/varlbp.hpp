@@ -59,6 +59,8 @@ auto varlbp = [](auto neighborhood, auto sampler) {
 
 template< typename T, size_t R, size_t P >
 auto varlbp = [](const cv::Mat& src) {
+    LBP_ASSERT (CV_32FC1 == src.type () || CV_64FC1 == src.type ());
+
     cv::Mat dst (src.size (), src.type (), cv::Scalar (0));
 
     auto op = varlbp_detail::varlbp< T > (

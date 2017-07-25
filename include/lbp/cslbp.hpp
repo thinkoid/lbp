@@ -59,6 +59,8 @@ auto cslbp = [](auto neighborhood, auto sampler) {
 
 template< typename T, size_t R, size_t P >
 auto cslbp = [](const cv::Mat& src, const T& epsilon = T { }) {
+    LBP_STATIC_ASSERT_MSG (0 == (P % 2), "odd-sized CS-LBP neighborhood");
+
     using value_type = typename boost::uint_t< P/2 >::least;
         
     cv::Mat dst (

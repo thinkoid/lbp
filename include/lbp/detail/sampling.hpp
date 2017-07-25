@@ -21,8 +21,8 @@ auto bilinear_sampler = [](const cv::Mat& src, float i, float j) {
     const int ii = int (i);
     const int ij = int (j);
 
-    assert (0 <= ii && ii < src.rows - 1);
-    assert (0 <= ij && ij < src.cols - 1);
+    LBP_ASSERT (0 <= ii && ii < src.rows - 1);
+    LBP_ASSERT (0 <= ij && ij < src.cols - 1);
 
     const double fx = j - ij;
     const double fy = i - ii;

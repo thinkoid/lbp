@@ -54,6 +54,8 @@ auto cssiltp2 = [](auto neighborhood, auto sampler) {
 
 template< typename T, size_t R, size_t P >
 auto cssiltp2 = [](const cv::Mat& src, const T& tau = T { }) {
+    LBP_STATIC_ASSERT_MSG (0 == (P % 2), "odd-sized CS-SILTP2 neighborhood");
+
     using value_type = typename boost::uint_t< P >::least;
 
     cv::Mat dst (

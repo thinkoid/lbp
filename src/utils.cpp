@@ -41,7 +41,7 @@ visual_range (int type) {
     case 6:
         return { 0., 1. }; // CV_32F, CV_64F
     default:
-        assert (0);
+        LBP_ASSERT (0);
     }
 }
 
@@ -66,7 +66,7 @@ equalize (const Mat& src) {
 
 Mat
 gray2float (const Mat& src) {
-    assert (1 == src.channels ());
+    LBP_ASSERT (1 == src.channels ());
 
     double a, b, c, d;
 
