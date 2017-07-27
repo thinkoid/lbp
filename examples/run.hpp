@@ -22,7 +22,7 @@ run_from_file_with (Function f, const options_t& opts) {
     const fs::path& filename (opts ["input"].as< std::string > ());
     const fs::path ext = filename.extension ();
 
-    if (ext == ".avi" || ext == ".mp4" || ext == ".mov") {
+    if (ext == ".avi" || ext == ".mp4" || ext == ".mpg" || ext == ".mov") {
         cv::VideoCapture cap;
 
         if (cap.open (filename.generic_string ())) {
