@@ -124,6 +124,18 @@ explicit global threshold is replaced by "...by thresholding the neighbourhood
 of each pixel with the center value...". Therefore, I left in place a threshold
 argument, similar to the one in CS-LBP, defaulted to 0.
 
+## SCS-LBP
+
+Based on CS-LBP (see [2006Heikkilä](#2006Heikkilä)), with a temporal extension that
+thresholds on the variance of the central pixel. As with CS-LBP, the resulting
+Mat type is the smallest type that has enough bits to encode the descriptor, and
+is dependent on the (half) size of the neighborhood. However, the size of the
+descriptor is half the size of the neighborhood plus one, so that might bump the
+descriptor in the next integral size ([2010Xue](#2010Xue)).
+
+The implementation uses the algorithms in [2009Gil-Jiménez](#2009Gil-Jiménez) to estimate the
+mean and the variance.
+
 ## Parallelization
 
 The implementations are reasonably streamlined within the boundaries of their
@@ -202,3 +214,12 @@ Carl Frélicot. "An eXtended center-symmetric local binary pattern for backgroun
 modeling and subtraction in videos." International Joint Conference on Computer
 Vision, Imaging and Computer Graphics Theory and Applications,
 VISAPP 2015. 2015. 
+
+<a name="2010Xue">[2010Xue]</a> Xue, Gengjian, Jun Sun, and Li Song. "Dynamic
+background subtraction based on spatial extended center-symmetric local binary
+pattern." *Multimedia and Expo (ICME), 2010 IEEE International Conference
+on.* IEEE, 2010. 
+
+<a name="2009Gil-Jiménez">[2009Gil-Jiménez]</a> Gil-Jiménez, Pedro, et
+al. "Continuous variance estimation in video surveillance sequences with high
+illumination changes." *Signal Processing* 89.7 (2009): 1412-1416.
