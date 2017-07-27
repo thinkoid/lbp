@@ -8,6 +8,9 @@
 
 namespace lbp {
 
+cv::Mat
+absdiff (const cv::Mat&, const cv::Mat&);
+
 std::pair< double, double >
 minmax (const cv::Mat&);
 
@@ -25,6 +28,12 @@ gray2float (const cv::Mat&);
 
 cv::Mat
 bgr2gray (const cv::Mat&);
+
+cv::Mat
+pow (const cv::Mat&, double);
+
+cv::Mat
+sqrt (const cv::Mat&);
 
 struct frame_delay {
     explicit frame_delay (size_t value = 40 /* milliseconds */);

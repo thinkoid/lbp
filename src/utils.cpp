@@ -12,6 +12,12 @@ using namespace cv;
 
 namespace lbp {
 
+cv::Mat
+absdiff (const cv::Mat& lhs, const cv::Mat& rhs) {
+    cv::Mat dst;
+    return cv::absdiff (lhs, rhs, dst), dst;
+}
+
 std::pair< double, double >
 minmax (const Mat& src) {
     double a, b;
@@ -83,6 +89,18 @@ Mat
 bgr2gray (const Mat& src) {
     Mat dst;
     return cvtColor (src, dst, COLOR_BGR2GRAY), dst;
+}
+
+cv::Mat
+pow (const cv::Mat& src, double d) {
+    cv::Mat dst;
+    return cv::pow (src, d, dst), dst;
+}
+
+cv::Mat
+sqrt (const cv::Mat& src) {
+    cv::Mat dst;
+    return cv::sqrt (src, dst), dst;
 }
 
 frame_delay::frame_delay (size_t value)
