@@ -183,8 +183,8 @@ Québec City, Canada, 1: 668–671.
 approach to texture analysis: extensions and applications. Oulun yliopisto,
 2003.
 
-<a name="2002Ojala">[2002Ojala]</a> Ojala, Timo, Matti Pietikainen, and Topi
-Maenpaa. "Multiresolution gray-scale and rotation invariant texture
+<a name="2002Ojala">[2002Ojala]</a> Ojala, Timo, Matti Pietikäinen, and Topi
+Mäenpää. "Multiresolution gray-scale and rotation invariant texture
 classification with local binary patterns." *IEEE Transactions on pattern
 analysis and machine intelligence* 24.7 (2002): 971-987.
 
