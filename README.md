@@ -93,6 +93,10 @@ integral OpenCV type ([2010Liao](#2010Liao)).
 
 The 2D center-symmetric version of the above ([2014Wu](#2014Wu)).
 
+## CS-SILTP
+
+The full operator described in ([2014Wu](#2014Wu)).
+
 ## E-LBP
 
 Described in [2012Mdakane](#2012Mdakane) -- an application of both Ojala LBP

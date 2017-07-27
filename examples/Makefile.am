@@ -4,7 +4,18 @@ EXTRA_DIST =
 
 include $(top_srcdir)/Makefile.common
 
-bin_PROGRAMS = cslbp csldp cssiltp2 elbp oclbp olbp scslbp siltp varlbp xcslbp
+bin_PROGRAMS =                                  \
+  cslbp                                         \
+  csldp                                         \
+  cssiltp                                       \
+  cssiltp2                                      \
+  elbp                                          \
+  oclbp                                         \
+  olbp                                          \
+  scslbp                                        \
+  siltp                                         \
+  varlbp                                        \
+  xcslbp
 
 cslbp_SOURCES = cslbp.cpp options.cpp
 cslbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
@@ -14,6 +25,9 @@ csldp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
 
 cssiltp2_SOURCES = cssiltp2.cpp options.cpp
 cssiltp2_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+
+cssiltp_SOURCES = cssiltp.cpp options.cpp
+cssiltp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
 
 elbp_SOURCES = elbp.cpp options.cpp
 elbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)

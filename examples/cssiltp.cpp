@@ -4,7 +4,7 @@
 using namespace std;
 
 #include <lbp/frame_range.hpp>
-#include <lbp/cssiltp2.hpp>
+#include <lbp/cssiltp.hpp>
 #include <lbp/utils.hpp>
 
 #include <options.hpp>
@@ -16,7 +16,7 @@ static void
 f (cv::VideoCapture& cap, const options_t& opts) {
     const bool display = opts.have ("display");
 
-    auto op = lbp::cssiltp2< float, 1, 8 > (.05);
+    auto op = lbp::cssiltp< float, 1, 8 > (.05);
 
     for (auto& frame : lbp::getframes_from (cap)) {
         lbp::frame_delay temp { 0 };
@@ -26,7 +26,7 @@ f (cv::VideoCapture& cap, const options_t& opts) {
         if (display) {
             imshow (
                 "Center-Symmetric Scale Invariant Local Ternary Pattern "
-                "(CSSILTP2) operator.", lbp::equalize (dst));
+                "(CSSILTP) operator.", lbp::equalize (dst));
         }
 
         if (temp.wait_for_key (27))

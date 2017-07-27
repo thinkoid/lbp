@@ -1,5 +1,5 @@
-#ifndef LBP_CSSILTP2_HPP
-#define LBP_CSSILTP2_HPP
+#ifndef LBP_CSSILTP_HPP
+#define LBP_CSSILTP_HPP
 
 #include <lbp/defs.hpp>
 #include <lbp/utils.hpp>
@@ -11,6 +11,7 @@
 #include <boost/hana/integral_constant.hpp>
 #include <boost/hana/functional/demux.hpp>
 
+#include <boost/circular_buffer.hpp>
 #include <boost/integer.hpp>
 
 //
@@ -27,11 +28,12 @@
 //
 
 namespace lbp {
-namespace cssiltp2_detail {
+namespace cssiltp_detail {
 
 template< typename T >
-auto cssiltp2 = [](auto neighborhood, auto sampler) {
-    return [=](const cv::Mat& src, size_t i, size_t j, const T& tau) {
+auto cssiltp = [](auto neighborhood, auto sampler) {
+    return [=](const cv::Mat& lhs, const cv::Mat& rhs,
+               size_t i, size_t j, const T& tau) {
         using namespace cv;
 
         namespace hana = boost::hana;
@@ -39,8 +41,8 @@ auto cssiltp2 = [](auto neighborhood, auto sampler) {
 
         return hana::fold_left (
             neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
-                const auto a = sampler (src, i + x [0_c], j + x [1_c]);
-                const auto b = sampler (src, i - x [0_c], j - x [1_c]);
+                const auto a = sampler (lhs, i + x [0_c], j + x [1_c]);
+                const auto b = sampler (rhs, i - x [0_c], j - x [1_c]);
 
                 const auto lhs = saturate_cast< T > ((1. - tau) * a);
                 const auto rhs = saturate_cast< T > ((1. + tau) * a);
@@ -50,27 +52,52 @@ auto cssiltp2 = [](auto neighborhood, auto sampler) {
     };
 };
 
-} // namespace cssiltp2_detail
+} // namespace cssiltp_detail
 
 template< typename T, size_t R, size_t P >
-auto cssiltp2 = [](const T& tau = T { }) {
-    return [=](const cv::Mat& src) {
+auto cssiltp = [](const T& tau = T { }) {
+    //
+    // The operator operates on center-symmetric pixels from
+    // center-symmetric frames (see 2.1:CS-SILTP descriptor):
+    //
+    boost::circular_buffer< cv::Mat > framebuf (R << 1);
+
+    return [=](const cv::Mat& src) mutable {
         LBP_STATIC_ASSERT_MSG (0 == (P % 2), "odd-sized neighborhood");
 
-        using value_type = typename boost::uint_t< P >::least;
+        framebuf.push_back (src.clone ());
+
+        if (framebuf.size () < R * 2)
+            return src;
+
+        //
+        // Limited by the largest integral type of cv::Mat:
+        //
+        using value_type = typename boost::uint_t< R * P >::least;
 
         cv::Mat dst (
             src.size (), opencv_type< (sizeof (value_type) << 3) >,
             cv::Scalar (0));
 
-        auto op = cssiltp2_detail::cssiltp2< T > (
+        auto op = cssiltp_detail::cssiltp< T > (
             detail::semicircular_neighborhood< R, P >,
             detail::nearest_sampler< T >);
 
 #pragma omp parallel for
         for (size_t i = R; i < src.rows - R; ++i) {
             for (size_t j = R; j < src.cols - R; ++j) {
-                dst.at< value_type > (i, j) = op (src, i, j, tau);
+                size_t n = 0;
+
+                for (size_t r = 0; r < 2 * R; ++r) {
+                    n <<= P/2;
+
+                    const auto& lhs = framebuf [r];
+                    const auto& rhs = framebuf [2 * R - r - 1];
+
+                    n |= op (lhs, rhs, i, j, tau);
+                }
+
+                dst.at< value_type > (i, j) = n;
             }
         }
 
@@ -80,4 +107,4 @@ auto cssiltp2 = [](const T& tau = T { }) {
 
 } // namespace lbp
 
-#endif // LBP_CSSILTP2_HPP
+#endif // LBP_CSSILTP_HPP
