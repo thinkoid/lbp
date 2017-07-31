@@ -12,7 +12,6 @@ using namespace std;
 #include <boost/hana/tuple.hpp>
 #include <boost/hana/functional/compose.hpp>
 namespace hana = boost::hana;
-
 using namespace hana::literals;
 
 #include <opencv2/highgui.hpp>
@@ -20,11 +19,6 @@ using namespace cv;
 
 #include <options.hpp>
 #include <run.hpp>
-
-auto minmax_ = [](const Mat& src) {
-    const auto x = lbp::minmax (src);
-    return hana::make_tuple (x.first, x.second);
-};
 
 auto bgr2gray = [](const cv::Mat& src) {
     return lbp::bgr2gray (src);

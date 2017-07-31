@@ -11,7 +11,6 @@ nobase_include_HEADERS =                        \
     lbp/detail/sampling.hpp                     \
     lbp/frame_range.hpp                         \
     lbp/oclbp.hpp                               \
-    lbp/olbp.cc                                 \
     lbp/olbp.hpp                                \
     lbp/scslbp.hpp                              \
     lbp/siltp.hpp                               \

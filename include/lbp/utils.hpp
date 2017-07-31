@@ -44,13 +44,23 @@ private:
     std::chrono::high_resolution_clock::time_point begin_;
 };
 
-template< size_t > constexpr int opencv_type;
+namespace detail {
+template< typename > struct undefined_value_t;
+} // namespace detail
 
-#define OPENCV_TYPEDEF(n, t) template< > constexpr int opencv_type< n > = t
+template< typename T > constexpr int
+opencv_type = detail::undefined_value_t< T >::value;
 
-OPENCV_TYPEDEF ( 8, CV_8U);
-OPENCV_TYPEDEF (16, CV_16U);
-OPENCV_TYPEDEF (32, CV_32S);
+#define OPENCV_TYPEDEF(T, t) template< > constexpr int opencv_type< T > = t
+
+OPENCV_TYPEDEF (char,               CV_8S);
+OPENCV_TYPEDEF (char unsigned,      CV_8U);
+OPENCV_TYPEDEF (int short,          CV_16S);
+OPENCV_TYPEDEF (int short unsigned, CV_16U);
+OPENCV_TYPEDEF (int,                CV_32S);
+OPENCV_TYPEDEF (int unsigned,       CV_32S);
+OPENCV_TYPEDEF (float,              CV_32F);
+OPENCV_TYPEDEF (double,             CV_64F);
 
 #undef OPENCV_TYPE_DEF
 

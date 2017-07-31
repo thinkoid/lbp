@@ -42,11 +42,9 @@ template< typename T >
 auto cslbp = [](auto neighborhood, auto sampler) {
     return [=](const cv::Mat& src, size_t i, size_t j, const T& epsilon) {
         using namespace cv;
-
-        namespace hana = boost::hana;
         using namespace hana::literals;
 
-        return hana::fold (
+        return boost::hana::fold (
             neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
                 const auto a = sampler (src, i + x [0_c], j + x [1_c]);
                 const auto b = sampler (src, i - x [0_c], j - x [1_c]);
@@ -62,10 +60,8 @@ auto cslbp = [](const cv::Mat& src, const T& epsilon = T { }) {
     LBP_STATIC_ASSERT_MSG (0 == (P % 2), "odd-sized neighborhood");
 
     using value_type = typename boost::uint_t< P/2 >::least;
-        
-    cv::Mat dst (
-        src.size (), opencv_type< (sizeof (value_type) << 3) >,
-        cv::Scalar (0));
+
+    cv::Mat dst (src.size (), opencv_type< value_type >, cv::Scalar (0));
 
     auto op = cslbp_detail::cslbp< T > (
         detail::semicircular_neighborhood< R, P >,

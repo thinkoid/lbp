@@ -31,19 +31,17 @@
 namespace lbp {
 namespace varlbp_detail {
 
-template< typename T >
-auto varlbp = [](auto neighborhood, auto sampler) {
-    namespace hana = boost::hana;
-    using namespace hana::literals;
-
-    const auto N = hana::size (neighborhood).value - 1;
+auto varlbp = [](auto N, auto S) {
+    const auto n = boost::hana::size (N).value - 1;
 
     return [=](const cv::Mat& src, size_t i, size_t j) {
+        using namespace hana::literals;
+
         double d = 0., m = 0.;
 
-        const auto s = hana::fold_left (
-            neighborhood, 0, [&, k = 0](auto accum, auto c) mutable {
-                const auto x = sampler (src, i + c [0_c], j + c [1_c]);
+        const auto s = boost::hana::fold_left (
+            N, 0, [&, k = 0](auto accum, auto c) mutable {
+                const auto x = S (src, i + c [0_c], j + c [1_c]);
 
                 d = x - m;
                 m += d / ++k;
@@ -51,7 +49,7 @@ auto varlbp = [](auto neighborhood, auto sampler) {
                 return accum + d * (x - m);
             });
 
-        return s / N;
+        return s / n;
     };
 };
 
@@ -63,7 +61,7 @@ auto varlbp = [](const cv::Mat& src) {
 
     cv::Mat dst (src.size (), src.type (), cv::Scalar (0));
 
-    auto op = varlbp_detail::varlbp< T > (
+    auto op = varlbp_detail::varlbp (
         detail::circular_neighborhood< R, P >,
         detail::bilinear_sampler< T >);
 
@@ -76,7 +74,6 @@ auto varlbp = [](const cv::Mat& src) {
 
     return dst;
 };
-
 
 } // namespace lbp
 

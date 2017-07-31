@@ -28,26 +28,22 @@
 namespace lbp {
 namespace scslbp_detail {
 
-template< typename T >
-auto scslbp = [](auto neighborhood, auto sampler) {
-    namespace hana = boost::hana;
-    using namespace hana::literals;
-
-    const auto N = hana::size (neighborhood);
+auto scslbp = [](auto N, auto S) {
+    const auto n = hana::size (N);
 
     return [=](const cv::Mat& src, const cv::Mat& m, const cv::Mat& s,
                size_t i, size_t j) {
+        using namespace hana::literals;
 
         const auto f = abs (
-            src.at< T > (i, j) - m.at< T > (i, j)) >= 2.5 * s.at< T > (i, j);
+            S (src, i, j) - S (m, i, j)) >= 2.5 * S (s, i, j);
 
-        return hana::fold_left (
-            neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
-                const auto a = sampler (src, i + x [0_c], j + x [1_c]);
-                const auto b = sampler (src, i - x [0_c], j - x [1_c]);
-
-                return accum + ((a >= b) << S++);
-            }) + (int (f) << N);
+        return boost::hana::fold_left (
+            N, 0, [&, shift = 0](auto accum, auto x) mutable {
+                const auto a = S (src, i + x [0_c], j + x [1_c]);
+                const auto b = S (src, i - x [0_c], j - x [1_c]);
+                return accum + ((a >= b) << shift++);
+            }) + (int (f) << n);
     };
 };
 
@@ -68,7 +64,7 @@ auto scslbp = [](double alpha = 0.05) {
     //
     // Elementary operator:
     //
-    auto op = scslbp_detail::scslbp< float > (
+    auto op = scslbp_detail::scslbp (
         detail::semicircular_neighborhood< R, P >,
         detail::nearest_sampler< float >);
 
@@ -92,9 +88,7 @@ auto scslbp = [](double alpha = 0.05) {
             return I;
         }
 
-        cv::Mat dst (
-            src.size (), opencv_type< (sizeof (value_type) << 3) >,
-            cv::Scalar (0));
+        cv::Mat dst (src.size (), opencv_type< value_type >, cv::Scalar (0));
 
         //
         // Exponential moving average for estimating the mean:

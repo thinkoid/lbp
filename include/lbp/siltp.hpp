@@ -28,22 +28,21 @@ namespace lbp {
 namespace siltp_detail {
 
 template< typename T >
-auto siltp = [](auto neighborhood, auto sampler) {
+auto siltp = [](auto N, auto S) {
     return [=](const cv::Mat& src, size_t i, size_t j, const T& tau) {
         using namespace cv;
-
-        namespace hana = boost::hana;
         using namespace hana::literals;
 
-        const auto c = src.at< T > (i, j);
+        const auto c = S (src, i, j);
 
         const auto lhs = saturate_cast< T > ((1. - tau) * c);
         const auto rhs = saturate_cast< T > ((1. + tau) * c);
 
-        return hana::fold_left (
-            neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
-                const auto g = sampler (src, i + x [0_c], j + x [1_c]);
-                return accum | ((g > rhs ? 1 : (g < lhs ? 2 : 0)) << (S++ * 2));
+        return boost::hana::fold_left (
+            N, 0, [&, shift = 0](auto accum, auto x) mutable {
+                const auto g = S (src, i + x [0_c], j + x [1_c]);
+                return accum | (
+                    (g > rhs ? 1 : (g < lhs ? 2 : 0)) << (shift++ * 2));
             });
     };
 };
@@ -54,9 +53,7 @@ template< typename T, size_t R, size_t P >
 auto siltp = [](const cv::Mat& src, const T& tau = T { }) {
     using value_type = typename boost::uint_t< P * 2 >::least;
 
-    cv::Mat dst (
-        src.size (), opencv_type< (sizeof (value_type) << 3) >,
-        cv::Scalar (0));
+    cv::Mat dst (src.size (), opencv_type< value_type >, cv::Scalar (0));
 
     auto op = siltp_detail::siltp< T > (
         detail::circular_neighborhood< R, P >,

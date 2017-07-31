@@ -30,24 +30,27 @@
 namespace lbp {
 namespace olbp_detail {
 
-template< typename T, size_t S >
-auto uniformity_measure = [](size_t arg) {
-    size_t a = 0;
+template< typename T, size_t N >
+using enable_if_integral_t = typename std::enable_if<
+    std::is_integral< T >::value, T >::type;
 
-    for (auto x = arg; x; x >>= 1)
+template< typename T, size_t S >
+auto uniformity_measure = [](enable_if_integral_t< T, S > arg) {
+    auto a = 0, b = 0;
+    const auto c = typename std::make_unsigned_t< T > (arg);
+
+    for (auto x = c; x; x >>= 1)
         a += x & 1;
 
-    size_t b = 0;
-
-    for (auto x = ((arg >> 1) | ((arg & 1) << (S - 1))) ^ arg; x; x >>= 1)
+    for (auto x = ((c >> 1) | ((c & 1) << (S - 1))) ^ c; x; x >>= 1)
         b += x & 1;
 
     return b < 3 ? a : (S + 1);
 };
 
 template< typename T >
-auto uniformity_measure< T, 8 > = [](unsigned char value) {
-    static constexpr unsigned char U [] = {
+auto uniformity_measure< T, 8 > = [](enable_if_integral_t< T, 8 > arg) {
+    static constexpr unsigned char arr [] = {
         0, 1, 1, 2, 1, 9, 2, 3, 1, 9, 9, 9, 2, 9, 3, 4,
         1, 9, 9, 9, 9, 9, 9, 9, 2, 9, 9, 9, 3, 9, 4, 5,
         1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
@@ -66,21 +69,22 @@ auto uniformity_measure< T, 8 > = [](unsigned char value) {
         4, 5, 9, 6, 9, 9, 9, 7, 5, 6, 9, 7, 6, 7, 7, 8
     };
 
-    return U [value];
+    const auto x = typename std::make_unsigned< T >::type (arg);
+    LBP_ASSERT (x < sizeof arr / sizeof *arr);
+
+    return arr [x];
 };
 
-template< typename T >
-auto olbp = [](auto neighborhood, auto sampler) {
+auto olbp = [](auto N, auto S) {
     return [=](const cv::Mat& src, size_t i, size_t j) {
-        namespace hana = boost::hana;
-        using namespace hana::literals;
+        using namespace boost::hana::literals;
 
-        const auto c = src.at< T > (i, j);
+        const auto c = S (src, i, j);
 
-        return hana::fold_left (
-            neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
-                const auto g = sampler (src, i + x [0_c], j + x [1_c]);
-                return accum | (size_t (c >= g) << S++);
+        return boost::hana::fold_left (
+            N, 0, [&, shift = 0](auto accum, auto x) mutable {
+                const auto g = S (src, i + x [0_c], j + x [1_c]);
+                return accum | (size_t (c >= g) << shift++);
             });
     };
 };
@@ -89,14 +93,13 @@ auto olbp = [](auto neighborhood, auto sampler) {
 
 template< typename T, size_t R, size_t P >
 auto olbp = [](const cv::Mat& src) {
-    namespace hana = boost::hana;
     using namespace hana::literals;
 
     cv::Mat dst (src.size (), CV_8U, cv::Scalar (0));
 
-    auto op = hana::demux
+    auto op = boost::hana::demux
         (olbp_detail::uniformity_measure< unsigned char, P >)
-        (olbp_detail::olbp< T > (
+        (olbp_detail::olbp (
             detail::circular_neighborhood< R, P >,
             detail::nearest_sampler< T >));
 
@@ -111,7 +114,5 @@ auto olbp = [](const cv::Mat& src) {
 };
 
 } // namespace lbp
-
-#include <lbp/olbp.cc>
 
 #endif // LBP_OLBP_HPP

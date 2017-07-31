@@ -32,18 +32,16 @@
 namespace lbp {
 namespace oclbp_detail {
 
-template< typename T >
-auto do_oclbp = [](auto neighborhood, auto sampler) {
+auto do_oclbp = [](auto N, auto S) {
     return [=](const cv::Mat& src, const cv::Mat& ref, size_t i, size_t j) {
-        namespace hana = boost::hana;
         using namespace hana::literals;
 
-        const auto c = ref.at< T > (i, j);
+        const auto c = S (ref, i, j);
 
-        return hana::fold_left (
-            neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
-                const auto g = sampler (src, i + x [0_c], j + x [1_c]);
-                return accum | (size_t (c >= g) << S++);
+        return boost::hana::fold_left (
+            N, 0, [&, shift = 0](auto accum, auto x) mutable {
+                const auto g = S (src, i + x [0_c], j + x [1_c]);
+                return accum | (size_t (c >= g) << shift++);
             });
     };
 };
@@ -52,7 +50,7 @@ template< typename T, size_t R, size_t P >
 auto oclbp = [](const cv::Mat& src, const cv::Mat& ref) {
     cv::Mat dst (src.size (), CV_8U);
 
-    auto op = do_oclbp< T > (
+    auto op = do_oclbp (
         detail::circular_neighborhood< R, P >,
         detail::nearest_sampler< T >);
 

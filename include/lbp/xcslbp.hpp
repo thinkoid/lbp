@@ -26,24 +26,22 @@ namespace lbp {
 namespace xcslbp_detail {
 
 template< typename T >
-auto xcslbp = [](auto neighborhood, auto sampler) {
+auto xcslbp = [](auto N, auto S) {
     return [=](const cv::Mat& src, size_t i, size_t j, const T& epsilon) {
         using namespace cv;
-
-        namespace hana = boost::hana;
         using namespace hana::literals;
 
-        const auto c = src.at< T > (i, j);
+        const auto c = S (src, i, j);
 
-        return hana::fold (
-            neighborhood, 0, [&, S = 0](auto accum, auto x) mutable {
-                const auto a = sampler (src, i + x [0_c], j + x [1_c]);
-                const auto b = sampler (src, i - x [0_c], j - x [1_c]);
+        return boost::hana::fold (
+            N, 0, [&, shift = 0](auto accum, auto x) mutable {
+                const auto a = S (src, i + x [0_c], j + x [1_c]);
+                const auto b = S (src, i - x [0_c], j - x [1_c]);
 
                 const auto g1 = a - b + c;
                 const auto g2 = (a - c) * (b - c);
 
-                return accum | (((g1 + g2) >= epsilon) << S++);
+                return accum | (((g1 + g2) >= epsilon) << shift++);
             });
     };
 };
@@ -54,9 +52,7 @@ template< typename T, size_t R, size_t P >
 auto xcslbp = [](const cv::Mat& src, const T& epsilon = T { }) {
     using value_type = typename boost::uint_t< P/2 >::least;
         
-    cv::Mat dst (
-        src.size (), opencv_type< (sizeof (value_type) << 3) >,
-        cv::Scalar (0));
+    cv::Mat dst (src.size (), opencv_type< value_type >, cv::Scalar (0));
 
     auto op = xcslbp_detail::xcslbp< T > (
         detail::semicircular_neighborhood< R, P >,
