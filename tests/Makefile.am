@@ -6,7 +6,7 @@ EXTRA_DIST =
 
 include $(top_srcdir)/Makefile.common
 
-LIBS += $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(top_srcdir)/src/liblbp.la
+LIBS += $(BOOST_UNIT_TEST_FRAMEWORK_LIBS)
 
 if DARWIN
   # Because stupid

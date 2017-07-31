@@ -18,34 +18,34 @@ bin_PROGRAMS =                                  \
   xcslbp
 
 cslbp_SOURCES = cslbp.cpp options.cpp
-cslbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+cslbp_LDADD = $(LIBS)
 
 csldp_SOURCES = csldp.cpp options.cpp
-csldp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+csldp_LDADD = $(LIBS)
 
 cssiltp2_SOURCES = cssiltp2.cpp options.cpp
-cssiltp2_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+cssiltp2_LDADD = $(LIBS)
 
 cssiltp_SOURCES = cssiltp.cpp options.cpp
-cssiltp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+cssiltp_LDADD = $(LIBS)
 
 elbp_SOURCES = elbp.cpp options.cpp
-elbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+elbp_LDADD = $(LIBS)
 
 oclbp_SOURCES = oclbp.cpp options.cpp
-oclbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+oclbp_LDADD = $(LIBS)
 
 olbp_SOURCES = olbp.cpp options.cpp
-olbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+olbp_LDADD = $(LIBS)
 
 siltp_SOURCES = siltp.cpp options.cpp
-siltp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+siltp_LDADD = $(LIBS)
 
 scslbp_SOURCES = scslbp.cpp options.cpp
-scslbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+scslbp_LDADD = $(LIBS)
 
 varlbp_SOURCES = varlbp.cpp options.cpp
-varlbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+varlbp_LDADD = $(LIBS)
 
 xcslbp_SOURCES = xcslbp.cpp options.cpp
-xcslbp_LDADD = $(top_srcdir)/src/liblbp.la $(LIBS)
+xcslbp_LDADD = $(LIBS)
