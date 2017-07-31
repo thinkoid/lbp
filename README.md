@@ -13,13 +13,6 @@ center. This follows the paper formula for calculating the neighboring and takes
 into consideration the Y-axis flipping in the OpenCV coordinate system. All
 neighborhoods are visited in the same fashion.
 
-I have supplied a specialization for a more efficient traversal of neighbors for
-*(8,1)* case. The usage is pretty straightforward:
-
-    // One plane frame:
-    auto op = lbp::olbp< unsigned char, 1, 8 >;
-    auto result = op (frame);
-
 ## OC-LBP
 
 The implementation requires a 3-plane image and assumes that incoming frames are
