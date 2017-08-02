@@ -1,6 +1,7 @@
 # LBP Library
 
-A collection of Local Binary Pattern (LBP) algorithms.
+A collection of Local Binary Pattern (LBP) algorithms. See the [LICENSE](COPYING)
+file for license rights and limitations (BSD). 
 
 ## OLBP
 
