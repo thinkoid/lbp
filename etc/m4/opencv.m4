@@ -503,7 +503,6 @@ OPENCV_DEFUN([Highgui],
      [opencv2/highgui.hpp],
      [return !&cv::moveWindow |
              !&cv::namedWindow |
-             !&cv::resizeWindow |
              !&cv::updateWindow |
              !&cv::destroyWindow;])
    LIBS=$opencv_highgui_save_LIBS

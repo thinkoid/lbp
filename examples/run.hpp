@@ -26,7 +26,7 @@ run_from_file_with (Function f, const options_t& opts) {
         cv::VideoCapture cap;
 
         if (cap.open (filename.generic_string ())) {
-            cap.set (CV_CAP_PROP_FPS, 25);
+            cap.set (cv::CAP_PROP_FPS, 25);
             run_from_stream (f, cap, opts);
         }
     }
@@ -42,7 +42,7 @@ run_from_camera_with (Function f, const options_t& opts) {
     const int stream = std::stoi (opts ["input"].as< std::string > ());
 
     if (cap.open (stream)) {
-        cap.set (CV_CAP_PROP_FPS, 25);
+        cap.set (cv::CAP_PROP_FPS, 25);
         run_from_stream (f, cap, opts);
     }
 }
