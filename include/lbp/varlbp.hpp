@@ -31,7 +31,7 @@
 namespace lbp {
 namespace varlbp_detail {
 
-auto varlbp = [](auto N, auto S) {
+const auto varlbp = [](auto N, auto S) {
     const auto n = boost::hana::size (N).value - 1;
 
     return [=](const cv::Mat& src, size_t i, size_t j) {

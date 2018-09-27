@@ -32,7 +32,7 @@
 namespace lbp {
 namespace oclbp_detail {
 
-auto do_oclbp = [](auto N, auto S) {
+const auto do_oclbp = [](auto N, auto S) {
     return [=](const cv::Mat& src, const cv::Mat& ref, size_t i, size_t j) {
         using namespace hana::literals;
 

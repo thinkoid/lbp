@@ -75,7 +75,7 @@ auto uniformity_measure< T, 8 > = [](enable_if_integral_t< T, 8 > arg) {
     return arr [x];
 };
 
-auto olbp = [](auto N, auto S) {
+const auto olbp = [](auto N, auto S) {
     return [=](const cv::Mat& src, size_t i, size_t j) {
         using namespace boost::hana::literals;
 

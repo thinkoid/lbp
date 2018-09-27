@@ -28,7 +28,7 @@
 namespace lbp {
 namespace scslbp_detail {
 
-auto scslbp = [](auto N, auto S) {
+const auto scslbp = [](auto N, auto S) {
     const auto n = hana::size (N);
 
     return [=](const cv::Mat& src, const cv::Mat& m, const cv::Mat& s,
