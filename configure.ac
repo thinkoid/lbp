@@ -7,6 +7,7 @@ AC_CONFIG_AUX_DIR([etc/m4])
 
 AM_INIT_AUTOMAKE([-Wno-portability subdir-objects dist-bzip2 nostdinc foreign])
 AC_CONFIG_HEADERS([include/lbp/_config.hpp:include/lbp/config.ac])
+AM_SILENT_RULES([yes])
 
 AC_PROG_CXX
 AC_CONFIG_CXX_WARNINGS
@@ -24,7 +25,7 @@ BOOST_FILESYSTEM
 BOOST_PROGRAM_OPTIONS
 BOOST_SYSTEM
 
-AC_PKG_CONFIG_WITH([opencv])
+AC_PKG_CONFIG_WITH([opencv4])
 
 AM_CONDITIONAL([DARWIN],[test `uname` == Darwin])
 AM_CONDITIONAL([LINUX], [test `uname` == Linux])
